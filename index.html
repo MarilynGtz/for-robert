@@ -508,11 +508,11 @@
                 <!-- Coupon 2 -->
                 <div class="glass-card rounded-2xl p-5 border border-gold-500/30 flex flex-col justify-between text-center relative overflow-hidden group">
                     <div class="p-3 bg-rose-900/60 rounded-xl text-gold-400 w-fit mx-auto mb-3">
-                        <i data-lucide="utensils" class="w-6 h-6"></i>
+                        <i data-lucide="flame" class="w-6 h-6"></i>
                     </div>
                     <h3 class="font-serif font-bold text-rose-100 text-base mb-1">Naughty Time🌶️</h3>
-                    <p class="text-xs text-rose-300/80 mb-4">You are always so generous—let me treat you to whatever you want!</p>
-                    <button onclick="redeemCoupon(this, 'Your Favorite Meal On Me')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
+                    <p class="text-xs text-rose-300/80 mb-4">You deserve sexy time with me 🤭</p>
+                    <button onclick="redeemCoupon(this, 'Naughty Time🌶️')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
                         Redeem Coupon
                     </button>
                 </div>
@@ -618,69 +618,47 @@
 
     <!-- FIREBASE SERVICES MODULE -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Global Config & App Init
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'robert-love-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyDummyKeyForFallbackOnly",
-            authDomain: "robert-love.firebaseapp.com",
-            projectId: "robert-love",
-            storageBucket: "robert-love.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abcdef"
+        // Your Exact Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDdDAUwgk7U20AtLapowFOa1sAE4yEhNUM",
+            authDomain: "for-robert.firebaseapp.com",
+            projectId: "for-robert",
+            storageBucket: "for-robert.firebasestorage.app",
+            messagingSenderId: "622210969201",
+            appId: "1:622210969201:web:c1af948a78760b5c3735d0"
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let currentUser = null;
+        // Save generic response/event to Firestore & LocalStorage Backup
+        window.saveEventToFirebase = async function(type, feelingText, noteText) {
+            const entryData = {
+                type: type || 'checkin',
+                feeling: feelingText,
+                note: noteText || "",
+                date: new Date().toLocaleString()
+            };
 
-        // Authenticate user first
-        async function initAuth() {
+            // 1. Save locally to localStorage
+            let localEntries = JSON.parse(localStorage.getItem('robert_responses') || '[]');
+            localEntries.unshift(entryData);
+            localStorage.setItem('robert_responses', JSON.stringify(localEntries));
+
+            // 2. Save to Firestore
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.log("Auth initialized:", err);
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                listenForResponses();
-            }
-        });
-
-        initAuth();
-
-        // Save generic response/event to Firestore
-        window.saveEventToFirebase = async function(type, text, noteText) {
-            if (!currentUser) {
-                await signInAnonymously(auth);
-            }
-            
-            try {
-                const responsesRef = collection(db, 'artifacts', appId, 'public', 'data', 'checkins');
+                const responsesRef = collection(db, 'checkins');
                 await addDoc(responsesRef, {
-                    type: type || 'checkin',
-                    feeling: text,
-                    note: noteText || "",
-                    timestamp: serverTimestamp(),
-                    userId: auth.currentUser?.uid || 'robert'
+                    ...entryData,
+                    timestamp: serverTimestamp()
                 });
-                return true;
             } catch (e) {
-                console.error("Firestore Save Error:", e);
-                return true;
+                console.log("Saved locally to storage backup.");
             }
+            return true;
         };
 
         window.saveFeelingToFirebase = async function(feelingText, noteText) {
@@ -690,22 +668,19 @@
         // Real-time listener for Partner Dashboard
         function listenForResponses() {
             try {
-                const responsesRef = collection(db, 'artifacts', appId, 'public', 'data', 'checkins');
+                const responsesRef = collection(db, 'checkins');
                 onSnapshot(responsesRef, (snapshot) => {
                     const list = [];
                     snapshot.forEach(doc => {
                         list.push({ id: doc.id, ...doc.data() });
                     });
-                    
-                    // Sort descending by timestamp client-side
                     list.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
-                    
                     renderResponsesList(list);
                 }, (error) => {
-                    console.log("Listener info:", error);
+                    renderResponsesList([]);
                 });
             } catch (err) {
-                console.log("Collection listener init:", err);
+                renderResponsesList([]);
             }
         }
 
@@ -713,13 +688,23 @@
             const container = document.getElementById('responsesContainer');
             if (!container) return;
 
-            if (items.length === 0) {
+            // Merge local storage items as fallback
+            let localEntries = JSON.parse(localStorage.getItem('robert_responses') || '[]');
+            let combined = [...items];
+
+            localEntries.forEach(local => {
+                if (!combined.some(c => c.date === local.date && c.feeling === local.feeling)) {
+                    combined.push(local);
+                }
+            });
+
+            if (combined.length === 0) {
                 container.innerHTML = `<div class="text-center py-8 text-rose-300/70 text-xs">No responses submitted yet! Whenever Robert answers or sends a love burst, it will appear here.</div>`;
                 return;
             }
 
-            container.innerHTML = items.map(item => {
-                const dateStr = item.timestamp?.seconds ? new Date(item.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+            container.innerHTML = combined.map(item => {
+                const dateStr = item.timestamp?.seconds ? new Date(item.timestamp.seconds * 1000).toLocaleString() : (item.date || 'Just now');
                 
                 let badgeClass = "bg-rose-900 border-gold-500/20 text-gold-300";
                 if (item.type === 'love_burst') {
@@ -731,7 +716,7 @@
                 return `
                     <div class="p-4 rounded-xl bg-rose-950/80 border border-gold-500/30 space-y-2">
                         <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold px-2.5 py-1 rounded-full border ${badgeClass}">${item.feeling}</span>
+                            <span class="font-bold px-2.5 py-1 rounded-full border ${badgeClass}">${item.feeling || item.selection || 'Check-in'}</span>
                             <span class="text-rose-300/60 text-[10px]">${dateStr}</span>
                         </div>
                         ${item.note ? `<p class="text-xs text-rose-100 italic bg-rose-900/40 p-2.5 rounded-lg border border-rose-800/40">"${item.note}"</p>` : ''}
@@ -739,15 +724,15 @@
                 `;
             }).join('');
         }
+
+        listenForResponses();
     </script>
 
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // -------------------------------------------------------------
         // FEELING SELECTION LOGIC
-        // -------------------------------------------------------------
         let selectedFeelingText = null;
 
         function selectFeeling(btn, feelingText) {
@@ -787,9 +772,7 @@
             lucide.createIcons();
         }
 
-        // -------------------------------------------------------------
         // RELATIONSHIP IMPROVEMENT SECTION LOGIC
-        // -------------------------------------------------------------
         let selectedImprovementText = null;
 
         function selectImprovement(btn, improvementText) {
@@ -829,17 +812,15 @@
             lucide.createIcons();
         }
 
-        // -------------------------------------------------------------
         // REASONS WHY I LOVE YOU GENERATOR
-        // -------------------------------------------------------------
         const reasons = [
-            "Because you're smart, hardworking and handsome you are.",
+            "Because you're smart and  hardworking 😍",
             "I love your lips and your eyes.",
-            "When I'm with you it feels calm and I like that.",
-            "I like the way you talk, how you express yourself.",
+            "When I'm with you, it feels calm and I like that.",
+            "I love all the naughty things with you 🤭",
             "I like how you're flirty with me in person.",
-            "I love how you dress 😍",
-            "I honestly never ever met someone like you.",
+            "I love how handsome you are in your suits 😍",
+            "You make me feel butterflies every time I see you",
             "You are so generous with me, and I appreciate everything you do for me!"
         ];
 
@@ -862,9 +843,7 @@
             }, 200);
         }
 
-        // -------------------------------------------------------------
         // HEART CONFETTI BURST EFFECT
-        // -------------------------------------------------------------
         function triggerHeartBurst(e) {
             const x = e ? e.clientX / window.innerWidth : 0.5;
             const y = e ? e.clientY / window.innerHeight : 0.5;
@@ -878,9 +857,7 @@
             });
         }
 
-        // -------------------------------------------------------------
-        // AUDIO SYNTHESIZER (WEB AUDIO API HEARTBEAT & SYNTH)
-        // -------------------------------------------------------------
+        // AUDIO SYNTHESIZER
         let audioCtx = null;
         let isPlayingAudio = false;
         let beatInterval = null;
@@ -965,9 +942,7 @@
             }
         }
 
-        // -------------------------------------------------------------
         // COUPON REDEMPTION MODAL
-        // -------------------------------------------------------------
         function redeemCoupon(btn, couponTitle) {
             btn.classList.remove('bg-gold-500/20', 'hover:bg-gold-500', 'text-gold-300');
             btn.classList.add('bg-rose-800', 'text-rose-200', 'cursor-not-allowed');
@@ -990,9 +965,7 @@
             document.getElementById('couponModal').classList.add('hidden');
         }
 
-        // -------------------------------------------------------------
         // PARTNER DASHBOARD MODAL & PIN VERIFICATION
-        // -------------------------------------------------------------
         function togglePartnerDashboard() {
             document.getElementById('partnerModal').classList.remove('hidden');
         }
@@ -1020,7 +993,6 @@
                 setTimeout(() => btn.classList.remove('scale-110'), 200);
             }
 
-            // Save Love Burst Event to Firebase
             if (window.saveEventToFirebase) {
                 await window.saveEventToFirebase('love_burst', '💖 LOVE BURST SENT BY ROBERT! 💖', 'Robert sent you a sudden explosion of love!');
             }
@@ -1031,9 +1003,7 @@
             document.getElementById('couponModal').classList.remove('hidden');
         }
 
-        // -------------------------------------------------------------
         // CANVAS PARTICLE SYSTEM
-        // -------------------------------------------------------------
         window.onload = function() {
             const canvas = document.getElementById('particleCanvas');
             const ctx = canvas.getContext('2d');
