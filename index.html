@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dedicated to Robert - My King 👑❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti for Heart Burst Effects -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            950: '#1a0307',
+                            900: '#2c0810',
+                            800: '#4a0e1b',
+                            700: '#751428',
+                            600: '#9f1d35',
+                            500: '#be123c',
+                            400: '#e11d48',
+                            300: '#f43f5e',
+                            100: '#ffe4e6'
+                        },
+                        gold: {
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                        }
+                    },
+                    fontFamily: {
+                        king: ['Cinzel Decorative', 'serif'],
+                        romantic: ['Great Vibes', 'cursive'],
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Styles & Dark Royal Theme */
+        body {
+            background: radial-gradient(circle at center, #2c0810 0%, #1a0307 70%, #0d0104 100%);
+            color: #fce7f3;
+            overflow-x: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a0307;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #751428;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #be123c;
+        }
+
+        /* Glowing text effects */
+        .glow-text-gold {
+            text-shadow: 0 0 12px rgba(234, 179, 8, 0.5), 0 0 25px rgba(202, 138, 4, 0.3);
+        }
+        .glow-text-rose {
+            text-shadow: 0 0 15px rgba(225, 29, 72, 0.6), 0 0 30px rgba(190, 18, 60, 0.4);
+        }
+
+        /* Floating particle canvas */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Glassmorphism containers */
+        .glass-card {
+            background: rgba(44, 8, 16, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(234, 179, 8, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+        .glass-card:hover {
+            border-color: rgba(234, 179, 8, 0.45);
+        }
+
+        /* Visualizer Audio Bar Animation */
+        .bar {
+            transition: height 0.15s ease;
+        }
+
+        /* Polaroid Photo Style */
+        .polaroid-frame {
+            background: #fffdfa;
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(225, 29, 72, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .polaroid-frame:hover {
+            transform: scale(1.03) rotate(0deg) !important;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.8), 0 0 30px rgba(234, 179, 8, 0.4);
+            z-index: 20;
+        }
+
+        /* Option Button Active Styling */
+        .feeling-btn {
+            transition: all 0.25s ease;
+        }
+        .feeling-btn.selected {
+            background: linear-gradient(135deg, #be123c 0%, #751428 100%);
+            border-color: #facc15 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(225, 29, 72, 0.4);
+        }
+    </style>
+</head>
+<body class="relative min-h-screen selection:bg-rose-600 selection:text-white">
+
+    <!-- Canvas for Floating Hearts & Starry Dust -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-5xl mx-auto px-4 py-8 md:py-12 flex flex-col gap-12 md:gap-16">
+
+        <!-- HEADER BANNER -->
+        <header class="text-center space-y-6 pt-6">
+            <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gold-500/40 bg-rose-950/70 backdrop-blur-md text-gold-400 text-xs md:text-sm font-medium uppercase tracking-widest shadow-lg animate-pulse">
+                <i data-lucide="crown" class="w-4 h-4 text-gold-400"></i>
+                <span>To My Handsome King, Robert</span>
+                <i data-lucide="crown" class="w-4 h-4 text-gold-400"></i>
+            </div>
+            
+            <h1 class="font-king text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-300 via-rose-200 to-gold-400 glow-text-gold leading-tight">
+                You Hold My Heart
+            </h1>
+            
+            <p class="font-romantic text-3xl sm:text-5xl text-rose-300 glow-text-rose max-w-2xl mx-auto">
+                "I honestly never ever met someone like you..."
+            </p>
+
+            <div class="flex items-center justify-center gap-4 pt-2">
+                <div class="h-px w-16 md:w-32 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent"></div>
+                <i data-lucide="heart" class="w-6 h-6 text-rose-500 fill-rose-500 animate-bounce"></i>
+                <div class="h-px w-16 md:w-32 bg-gradient-to-r from-transparent via-gold-500/50 to-transparent"></div>
+            </div>
+        </header>
+
+        <!-- SOUNDTRACK & HEARTBEAT CONTROLLER -->
+        <section class="glass-card rounded-2xl p-6 md:p-8 border border-gold-500/30 text-center relative overflow-hidden">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                <div class="text-left space-y-1">
+                    <div class="flex items-center gap-2 text-gold-400 font-semibold text-xs tracking-wider uppercase">
+                        <i data-lucide="activity" class="w-4 h-4"></i>
+                        <span>AMBIENT HEARTBEAT SOUNDSCAPE</span>
+                    </div>
+                    <h3 class="font-serif text-xl font-bold text-rose-100">Feel My Heart Beat For You</h3>
+                    <p class="text-xs text-rose-300/80">Turn on audio to listen to the soft rhythm of my love for you.</p>
+                </div>
+
+                <!-- Sound Controls & Visualizer -->
+                <div class="flex items-center gap-4 w-full md:w-auto justify-center">
+                    <div id="visualizer" class="flex items-end gap-1 h-10 px-3 py-1 bg-rose-950/80 rounded-lg border border-rose-800/50">
+                        <div class="bar w-1.5 bg-rose-500 rounded-full h-2"></div>
+                        <div class="bar w-1.5 bg-gold-400 rounded-full h-3"></div>
+                        <div class="bar w-1.5 bg-rose-400 rounded-full h-5"></div>
+                        <div class="bar w-1.5 bg-gold-300 rounded-full h-2"></div>
+                        <div class="bar w-1.5 bg-rose-500 rounded-full h-4"></div>
+                        <div class="bar w-1.5 bg-rose-300 rounded-full h-3"></div>
+                    </div>
+
+                    <button id="audioToggleBtn" onclick="toggleAudio()" class="flex items-center gap-2 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-medium px-6 py-3 rounded-xl shadow-lg transition-all transform active:scale-95 border border-rose-400/30">
+                        <i id="audioIcon" data-lucide="volume-2" class="w-5 h-5"></i>
+                        <span id="audioBtnText">Play Heartbeat Sound</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- OUR PHOTO MEMORIES GALLERY -->
+        <section class="glass-card rounded-3xl p-6 md:p-10 border border-gold-500/40 relative space-y-6 text-center">
+            <div class="space-y-2">
+                <span class="text-xs font-bold text-gold-400 uppercase tracking-widest inline-flex items-center gap-2">
+                    <i data-lucide="camera" class="w-4 h-4"></i>
+                    Our Special Moments
+                </span>
+                <h2 class="font-serif text-3xl font-bold text-rose-100">Forever Captured With My King</h2>
+                <p class="text-rose-300/80 text-sm max-w-lg mx-auto">Every single second in your arms is my favorite memory.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 pt-4 max-w-4xl mx-auto">
+                <!-- Photo 1 -->
+                <div class="polaroid-frame rounded-lg transform md:-rotate-2">
+                    <div class="overflow-hidden rounded bg-rose-950 aspect-[4/3] relative">
+                        <img src="IMG_20260807_181305.jpg" alt="Sweet Kiss on the Cheek with Robert" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x450/4a0e1b/fde047?text=Us+Together+❤️'">
+                    </div>
+                    <p class="font-romantic text-2xl text-rose-950 mt-3 font-bold">Safe in your arms... 🥰</p>
+                </div>
+
+                <!-- Photo 2 -->
+                <div class="polaroid-frame rounded-lg transform md:rotate-2">
+                    <div class="overflow-hidden rounded bg-rose-950 aspect-[4/3] relative">
+                        <img src="IMG_20260807_181308.jpg" alt="Loving Kiss with Robert" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x450/4a0e1b/fde047?text=My+King+%26+Me+👑'">
+                    </div>
+                    <p class="font-romantic text-2xl text-rose-950 mt-3 font-bold">Always & Forever My King 💋</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOW CAN I MAKE OUR RELATIONSHIP BETTER SECTION -->
+        <section class="glass-card rounded-3xl p-6 md:p-10 border border-gold-500/50 relative space-y-6">
+            <div class="text-center space-y-2 border-b border-rose-800/50 pb-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gold-500/20 border border-gold-400/40 text-gold-300 text-xs font-semibold uppercase tracking-wider">
+                    <i data-lucide="sparkles" class="w-4 h-4 text-gold-400"></i>
+                    <span>Growing Closer Together</span>
+                </div>
+                <h2 class="font-serif text-3xl font-bold text-rose-100">How Can I Make Our Relationship Better, Robert?</h2>
+                <p class="text-rose-200/80 text-sm max-w-xl mx-auto">
+                    I love you so much and I want to make sure you always feel happy, cherished, and fulfilled with me. What is something I can do or we can do to make our bond even stronger?
+                </p>
+            </div>
+
+            <div class="space-y-6 max-w-2xl mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="betterRelGrid">
+                    
+                    <button type="button" onclick="selectImprovement(this, 'More Quality Time Together ⏳')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">⏳</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">More Quality Time Together</div>
+                            <div class="text-[11px] text-rose-300/70">More uninterrupted one-on-one time</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectImprovement(this, 'More Open Communication 🗣️')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">🗣️</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">More Open Communication</div>
+                            <div class="text-[11px] text-rose-300/70">Talking through things freely and deeply</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectImprovement(this, 'More Surprise Date Nights 🥂')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">🥂</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">Surprise Date Nights</div>
+                            <div class="text-[11px] text-rose-300/70">Fun outings & romantic surprises</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectImprovement(this, 'More Affection & Appreciation 🤗')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">🤗</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">More Affection & Hugs</div>
+                            <div class="text-[11px] text-rose-300/70">Physical touch, hugs, and love notes</div>
+                        </div>
+                    </button>
+
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-gold-300 uppercase tracking-wider">
+                        Anything specific on your heart you'd like to share?
+                    </label>
+                    <textarea id="improvementNote" rows="3" placeholder="Tell me what you need from me, babe... I'm here to listen." class="w-full bg-rose-950/90 border border-rose-800/70 rounded-xl p-3 text-sm text-rose-100 placeholder-rose-400/50 focus:outline-none focus:border-gold-400 transition-colors"></textarea>
+                </div>
+
+                <button type="button" id="submitImprovementBtn" onclick="submitImprovementResponse()" class="w-full py-4 bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-rose-950 font-bold rounded-2xl shadow-xl shadow-gold-500/20 transition-all transform hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+                    <span>Send Suggestions To Me ❤️</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE FEELING CHECK-IN TOOL (FIREBASE SYNCED) -->
+        <section class="glass-card rounded-3xl p-6 md:p-10 border border-gold-500/40 relative space-y-6">
+            <div class="text-center space-y-2 border-b border-rose-800/50 pb-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-900/60 border border-gold-500/30 text-gold-300 text-xs font-semibold uppercase tracking-wider">
+                    <i data-lucide="heart-handshake" class="w-4 h-4"></i>
+                    <span>Safe & Honest Space For Us</span>
+                </div>
+                <h2 class="font-serif text-3xl font-bold text-rose-100">How Are You Feeling Today, Robert?</h2>
+                <p class="text-rose-200/80 text-sm max-w-xl mx-auto">
+                    Your feelings matter to me more than anything. Please select how you feel right now so we can always stay connected and open with each other.
+                </p>
+            </div>
+
+            <!-- Feeling Options Form -->
+            <div class="space-y-6 max-w-2xl mx-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="feelingsGrid">
+                    
+                    <button type="button" onclick="selectFeeling(this, 'I Love You So Much ❤️')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">❤️</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">I Love You So Much</div>
+                            <div class="text-[11px] text-rose-300/70">My heart is completely yours</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectFeeling(this, 'I Like You A Lot 💕')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">💕</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">I Like You A Lot</div>
+                            <div class="text-[11px] text-rose-300/70">I enjoy us and care about you</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectFeeling(this, 'Feeling A Bit Meh / Need Space 🥺')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">🥺</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">Feeling A Bit Meh / Need Space</div>
+                            <div class="text-[11px] text-rose-300/70">Tired, overwhelmed, or need breathing room</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectFeeling(this, 'I Need To Talk To You 💬')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group">
+                        <span class="text-2xl">💬</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">I Need To Talk To You</div>
+                            <div class="text-[11px] text-rose-300/70">Something is on my mind we should discuss</div>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="selectFeeling(this, 'My Feelings Have Changed... 💔')" class="feeling-btn p-4 rounded-2xl bg-rose-950/70 border border-rose-800/60 hover:border-gold-400 text-left flex items-center gap-3 group sm:col-span-2">
+                        <span class="text-2xl">💔</span>
+                        <div>
+                            <div class="font-bold text-rose-100 text-sm">My Feelings Have Changed</div>
+                            <div class="text-[11px] text-rose-300/70">I want to be honest with you about how I feel</div>
+                        </div>
+                    </button>
+
+                </div>
+
+                <!-- Optional Note Area -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-gold-300 uppercase tracking-wider">
+                        Want to add a note or tell me more? (Optional)
+                    </label>
+                    <textarea id="feelingNote" rows="3" placeholder="Type anything you want to share with me here..." class="w-full bg-rose-950/90 border border-rose-800/70 rounded-xl p-3 text-sm text-rose-100 placeholder-rose-400/50 focus:outline-none focus:border-gold-400 transition-colors"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" id="submitFeelingBtn" onclick="submitFeelingResponse()" class="w-full py-4 bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-rose-950 font-bold rounded-2xl shadow-xl shadow-gold-500/20 transition-all transform hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                    <span>Send My Response To You ❤️</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- REASONS WHY YOU ARE MY KING - INTERACTIVE GRID -->
+        <section class="space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="font-serif text-3xl font-bold text-gold-300">8 Reasons You're My One & Only</h2>
+                <p class="text-rose-300/80 text-sm">Tap on any feature below to reveal a sweet personal note</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Grid 1 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Smart & Hardworking</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        I respect your drive, your intelligence, and how hard you work every day, Robert.
+                    </p>
+                </div>
+
+                <!-- Grid 2 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Lips & Eyes</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        You are so handsome! I am endlessly lost in your eyes and love your lips.
+                    </p>
+                </div>
+
+                <!-- Grid 3 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Calm & Safe Feeling</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        When I'm with you, everything feels calm, peaceful, and right. You are my safe space.
+                    </p>
+                </div>
+
+                <!-- Grid 4 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="message-circle" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">How You Express Yourself</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        I love listening to the way you talk and express yourself. I could listen to you all day.
+                    </p>
+                </div>
+
+                <!-- Grid 5 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="flame" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Flirty In Person</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        I adore how flirty you are with me in person. It always gives me butterflies!
+                    </p>
+                </div>
+
+                <!-- Grid 6 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="shirt" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Your Great Style</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        I love how you dress 😍 You always look so attractive, stylish, and sharp.
+                    </p>
+                </div>
+
+                <!-- Grid 7 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="gift" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">Incredible Generosity</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        You are so giving, kind, and generous with me. I appreciate everything you do for me!
+                    </p>
+                </div>
+
+                <!-- Grid 8 -->
+                <div onclick="triggerHeartBurst(event)" class="glass-card rounded-2xl p-5 border border-gold-500/30 hover:border-gold-400 transition-all cursor-pointer group text-center space-y-3">
+                    <div class="w-12 h-12 bg-rose-900/60 rounded-2xl flex items-center justify-center mx-auto text-gold-400 border border-gold-500/30 group-hover:scale-110 transition-transform">
+                        <i data-lucide="gem" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-lg">One Of A Kind</h3>
+                    <p class="text-xs text-rose-200/80 leading-relaxed">
+                        There is no one on this planet like you, Robert. You are truly unique and irreplaceable.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- REASONS WHY I LOVE YOU GENERATOR -->
+        <section class="glass-card rounded-3xl p-6 md:p-10 border border-gold-500/30 relative text-center">
+            <div class="inline-block p-3 rounded-2xl bg-rose-900/60 text-gold-400 mb-4 border border-gold-500/20">
+                <i data-lucide="shuffle" class="w-8 h-8"></i>
+            </div>
+            
+            <h2 class="font-serif text-2xl md:text-3xl font-bold text-gold-300 mb-2">Random Love Note Deck</h2>
+            <p class="text-sm text-rose-200/80 mb-8 max-w-lg mx-auto">Click below whenever you need a quick reminder of how special you are to me.</p>
+
+            <div class="min-h-[140px] flex flex-col items-center justify-center p-6 bg-rose-950/70 rounded-2xl border border-rose-800/40 relative overflow-hidden mb-6">
+                <div class="text-gold-400 font-bold text-xs uppercase tracking-wider mb-2" id="reasonCounter">
+                    Note #1
+                </div>
+                <blockquote class="font-serif text-lg md:text-2xl text-rose-100 italic max-w-2xl transition-all duration-300" id="reasonText">
+                    "Because you're smart, hardworking and handsome you are."
+                </blockquote>
+            </div>
+
+            <button onclick="generateNewReason(event)" class="px-8 py-3.5 bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 hover:from-gold-400 hover:to-gold-500 text-rose-950 font-bold rounded-xl shadow-lg shadow-gold-500/20 transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2 mx-auto">
+                <i data-lucide="heart" class="w-5 h-5 fill-rose-950"></i>
+                <span>Draw Another Love Reason</span>
+            </button>
+        </section>
+
+        <!-- DIGITAL LOVE COUPONS FOR KING ROBERT -->
+        <section class="space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="font-serif text-3xl font-bold text-rose-100">VIP Royal Coupons For Robert</h2>
+                <p class="text-rose-300/80 text-sm">Redeem any coupon anytime you want, my King! Guaranteed no expiration.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="couponsGrid">
+                <!-- Coupon 1 -->
+                <div class="glass-card rounded-2xl p-5 border border-gold-500/30 flex flex-col justify-between text-center relative overflow-hidden group">
+                    <div class="p-3 bg-rose-900/60 rounded-xl text-gold-400 w-fit mx-auto mb-3">
+                        <i data-lucide="sparkle" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-base mb-1">Full Stress-Relief Massage</h3>
+                    <p class="text-xs text-rose-300/80 mb-4">Because you work so hard, you deserve total relaxation.</p>
+                    <button onclick="redeemCoupon(this, 'Full Stress-Relief Massage')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
+                        Redeem Coupon
+                    </button>
+                </div>
+
+                <!-- Coupon 2 -->
+                <div class="glass-card rounded-2xl p-5 border border-gold-500/30 flex flex-col justify-between text-center relative overflow-hidden group">
+                    <div class="p-3 bg-rose-900/60 rounded-xl text-gold-400 w-fit mx-auto mb-3">
+                        <i data-lucide="utensils" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-base mb-1">Your Favorite Meal On Me</h3>
+                    <p class="text-xs text-rose-300/80 mb-4">You are always so generous—let me treat you to whatever you want!</p>
+                    <button onclick="redeemCoupon(this, 'Your Favorite Meal On Me')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
+                        Redeem Coupon
+                    </button>
+                </div>
+
+                <!-- Coupon 3 -->
+                <div class="glass-card rounded-2xl p-5 border border-gold-500/30 flex flex-col justify-between text-center relative overflow-hidden group">
+                    <div class="p-3 bg-rose-900/60 rounded-xl text-gold-400 w-fit mx-auto mb-3">
+                        <i data-lucide="film" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-base mb-1">King's Movie Choice Night</h3>
+                    <p class="text-xs text-rose-300/80 mb-4">You pick the movie, snacks, and control the TV remote all night!</p>
+                    <button onclick="redeemCoupon(this, 'King\'s Movie Choice Night')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
+                        Redeem Coupon
+                    </button>
+                </div>
+
+                <!-- Coupon 4 -->
+                <div class="glass-card rounded-2xl p-5 border border-gold-500/30 flex flex-col justify-between text-center relative overflow-hidden group">
+                    <div class="p-3 bg-rose-900/60 rounded-xl text-gold-400 w-fit mx-auto mb-3">
+                        <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-serif font-bold text-rose-100 text-base mb-1">Unlimited Hugs & Kisses</h3>
+                    <p class="text-xs text-rose-300/80 mb-4">Valid anytime, anywhere, for as long as you need.</p>
+                    <button onclick="redeemCoupon(this, 'Unlimited Hugs & Kisses')" class="w-full py-2 bg-gold-500/20 hover:bg-gold-500 text-gold-300 hover:text-rose-950 border border-gold-500/40 font-semibold text-xs rounded-lg transition-all">
+                        Redeem Coupon
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER & LOVE ACTION -->
+        <section class="glass-card rounded-3xl p-8 border border-gold-500/30 text-center space-y-6">
+            <h2 class="font-serif text-3xl font-bold text-gold-300">I Love You So Much, Robert!</h2>
+            <p class="text-sm text-rose-200/80 max-w-lg mx-auto">Tap the button below to send a real-time Love Burst directly to my Partner Dashboard!</p>
+            
+            <button id="loveBurstBtn" onclick="sendLoveSignal(event)" class="px-8 py-4 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold rounded-2xl shadow-xl shadow-rose-900/50 transition-all transform hover:scale-105 active:scale-95 inline-flex items-center gap-3 border border-rose-400/40">
+                <i data-lucide="heart-handshake" class="w-5 h-5 text-gold-300"></i>
+                <span>Send Love Burst To You ❤️</span>
+            </button>
+        </section>
+
+        <!-- PRIVATE PARTNER DASHBOARD TOGGLE -->
+        <div class="text-center pt-2">
+            <button onclick="togglePartnerDashboard()" class="text-xs text-gold-400/60 hover:text-gold-300 underline font-medium inline-flex items-center gap-1 transition-colors">
+                <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                <span>Partner Dashboard (View Robert's Answers)</span>
+            </button>
+        </div>
+
+        <!-- PARTNER DASHBOARD MODAL -->
+        <div id="partnerModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+            <div class="glass-card rounded-3xl p-6 md:p-8 max-w-xl w-full border border-gold-400 text-left space-y-5 relative max-h-[90vh] flex flex-col">
+                <div class="flex items-center justify-between border-b border-rose-800/60 pb-4">
+                    <div class="flex items-center gap-2 text-gold-300 font-bold font-serif text-lg">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-gold-400"></i>
+                        <span>Robert's Submitted Check-ins</span>
+                    </div>
+                    <button onclick="closePartnerModal()" class="text-rose-300 hover:text-white p-1">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- PIN Check -->
+                <div id="pinBox" class="space-y-4 text-center py-6">
+                    <p class="text-xs text-rose-200">Enter PIN to access Robert's private responses:</p>
+                    <input type="password" id="pinInput" placeholder="Enter 1234" class="px-4 py-2 bg-rose-950 border border-rose-700 rounded-xl text-center text-rose-100 font-bold focus:outline-none focus:border-gold-400">
+                    <div>
+                        <button onclick="verifyPin()" class="px-6 py-2 bg-gold-500 text-rose-950 font-bold rounded-xl text-sm hover:bg-gold-400">
+                            Unlock Dashboard
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Real-time Responses List -->
+                <div id="responsesContainer" class="hidden overflow-y-auto space-y-3 flex-1 pr-1">
+                    <div class="text-center py-8 text-rose-300/70 text-xs">Loading responses from database...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="text-center py-6 text-xs text-rose-300/60 space-y-2 border-t border-rose-900/50">
+            <p class="font-romantic text-2xl text-gold-400">Created with pure love & devotion for Robert.</p>
+            <p>© Forever Yours • You Hold My Whole Heart</p>
+        </footer>
+
+    </div>
+
+    <!-- MODAL FOR REDEEMED COUPONS & CONFIRMATIONS -->
+    <div id="couponModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card rounded-3xl p-8 max-w-md w-full border border-gold-400 text-center space-y-6 relative animate-fade-in">
+            <div class="w-16 h-16 bg-gold-500/20 rounded-full flex items-center justify-center mx-auto border border-gold-400/50 text-gold-400">
+                <i data-lucide="check-circle" class="w-8 h-8"></i>
+            </div>
+            <h3 class="font-serif text-2xl font-bold text-gold-300" id="modalTitle">Coupon Claimed, My King!</h3>
+            <p class="text-sm text-rose-100 leading-relaxed" id="modalText">You've successfully claimed this coupon.</p>
+            <p class="text-xs text-rose-300/80 italic" id="modalSubtext">Show this screen to me anytime to collect your reward! ❤️</p>
+            <button onclick="closeModal()" class="w-full py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-rose-950 font-bold rounded-xl shadow-lg hover:from-gold-400 hover:to-gold-500 transition-all">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- FIREBASE SERVICES MODULE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Config & App Init
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'robert-love-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKeyForFallbackOnly",
+            authDomain: "robert-love.firebaseapp.com",
+            projectId: "robert-love",
+            storageBucket: "robert-love.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        // Authenticate user first
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.log("Auth initialized:", err);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                listenForResponses();
+            }
+        });
+
+        initAuth();
+
+        // Save generic response/event to Firestore
+        window.saveEventToFirebase = async function(type, text, noteText) {
+            if (!currentUser) {
+                await signInAnonymously(auth);
+            }
+            
+            try {
+                const responsesRef = collection(db, 'artifacts', appId, 'public', 'data', 'checkins');
+                await addDoc(responsesRef, {
+                    type: type || 'checkin',
+                    feeling: text,
+                    note: noteText || "",
+                    timestamp: serverTimestamp(),
+                    userId: auth.currentUser?.uid || 'robert'
+                });
+                return true;
+            } catch (e) {
+                console.error("Firestore Save Error:", e);
+                return true;
+            }
+        };
+
+        window.saveFeelingToFirebase = async function(feelingText, noteText) {
+            return await window.saveEventToFirebase('checkin', feelingText, noteText);
+        };
+
+        // Real-time listener for Partner Dashboard
+        function listenForResponses() {
+            try {
+                const responsesRef = collection(db, 'artifacts', appId, 'public', 'data', 'checkins');
+                onSnapshot(responsesRef, (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(doc => {
+                        list.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Sort descending by timestamp client-side
+                    list.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                    
+                    renderResponsesList(list);
+                }, (error) => {
+                    console.log("Listener info:", error);
+                });
+            } catch (err) {
+                console.log("Collection listener init:", err);
+            }
+        }
+
+        function renderResponsesList(items) {
+            const container = document.getElementById('responsesContainer');
+            if (!container) return;
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-rose-300/70 text-xs">No responses submitted yet! Whenever Robert answers or sends a love burst, it will appear here.</div>`;
+                return;
+            }
+
+            container.innerHTML = items.map(item => {
+                const dateStr = item.timestamp?.seconds ? new Date(item.timestamp.seconds * 1000).toLocaleString() : 'Just now';
+                
+                let badgeClass = "bg-rose-900 border-gold-500/20 text-gold-300";
+                if (item.type === 'love_burst') {
+                    badgeClass = "bg-rose-600 border-rose-300 text-white animate-pulse";
+                } else if (item.type === 'relationship_improvement') {
+                    badgeClass = "bg-gold-600/30 border-gold-400 text-gold-200";
+                }
+
+                return `
+                    <div class="p-4 rounded-xl bg-rose-950/80 border border-gold-500/30 space-y-2">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold px-2.5 py-1 rounded-full border ${badgeClass}">${item.feeling}</span>
+                            <span class="text-rose-300/60 text-[10px]">${dateStr}</span>
+                        </div>
+                        ${item.note ? `<p class="text-xs text-rose-100 italic bg-rose-900/40 p-2.5 rounded-lg border border-rose-800/40">"${item.note}"</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // -------------------------------------------------------------
+        // FEELING SELECTION LOGIC
+        // -------------------------------------------------------------
+        let selectedFeelingText = null;
+
+        function selectFeeling(btn, feelingText) {
+            document.querySelectorAll('#feelingsGrid .feeling-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedFeelingText = feelingText;
+        }
+
+        async function submitFeelingResponse() {
+            if (!selectedFeelingText) {
+                document.getElementById('modalTitle').textContent = "Please Select A Feeling";
+                document.getElementById('modalText').textContent = "Please tap one of the feeling options above before submitting!";
+                document.getElementById('modalSubtext').textContent = "I care about every feeling you have! ❤️";
+                document.getElementById('couponModal').classList.remove('hidden');
+                return;
+            }
+
+            const noteVal = document.getElementById('feelingNote').value.trim();
+            const btn = document.getElementById('submitFeelingBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Sending To Your Partner...</span>`;
+            lucide.createIcons();
+
+            if (window.saveFeelingToFirebase) {
+                await window.saveFeelingToFirebase(selectedFeelingText, noteVal);
+            }
+
+            confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 } });
+
+            document.getElementById('modalTitle').textContent = "Response Received!";
+            document.getElementById('modalText').textContent = `Thank you for sharing with me, Robert! I received: "${selectedFeelingText}"`;
+            document.getElementById('modalSubtext').textContent = "I love you and appreciate your honesty. ❤️";
+            document.getElementById('couponModal').classList.remove('hidden');
+
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i><span>Response Sent!</span>`;
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------
+        // RELATIONSHIP IMPROVEMENT SECTION LOGIC
+        // -------------------------------------------------------------
+        let selectedImprovementText = null;
+
+        function selectImprovement(btn, improvementText) {
+            document.querySelectorAll('#betterRelGrid .feeling-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedImprovementText = improvementText;
+        }
+
+        async function submitImprovementResponse() {
+            if (!selectedImprovementText) {
+                document.getElementById('modalTitle').textContent = "Please Select An Option";
+                document.getElementById('modalText').textContent = "Please click on one of the suggestion options above or leave a custom note!";
+                document.getElementById('modalSubtext').textContent = "I really care about making us better together! ❤️";
+                document.getElementById('couponModal').classList.remove('hidden');
+                return;
+            }
+
+            const noteVal = document.getElementById('improvementNote').value.trim();
+            const btn = document.getElementById('submitImprovementBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Sending Suggestions...</span>`;
+            lucide.createIcons();
+
+            if (window.saveEventToFirebase) {
+                await window.saveEventToFirebase('relationship_improvement', selectedImprovementText, noteVal);
+            }
+
+            confetti({ particleCount: 40, spread: 70, origin: { y: 0.6 } });
+
+            document.getElementById('modalTitle').textContent = "Suggestions Sent To Me!";
+            document.getElementById('modalText').textContent = `Thank you for sharing, Robert! I received your note: "${selectedImprovementText}". I promise to work on this for us!`;
+            document.getElementById('modalSubtext').textContent = "I love you and value us so much. ❤️";
+            document.getElementById('couponModal').classList.remove('hidden');
+
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="check" class="w-5 h-5"></i><span>Suggestions Sent!</span>`;
+            lucide.createIcons();
+        }
+
+        // -------------------------------------------------------------
+        // REASONS WHY I LOVE YOU GENERATOR
+        // -------------------------------------------------------------
+        const reasons = [
+            "Because you're smart, hardworking and handsome you are.",
+            "I love your lips and your eyes.",
+            "When I'm with you it feels calm and I like that.",
+            "I like the way you talk, how you express yourself.",
+            "I like how you're flirty with me in person.",
+            "I love how you dress 😍",
+            "I honestly never ever met someone like you.",
+            "You are so generous with me, and I appreciate everything you do for me!"
+        ];
+
+        let currentReasonIdx = 0;
+
+        function generateNewReason(e) {
+            triggerHeartBurst(e);
+            currentReasonIdx = (currentReasonIdx + 1) % reasons.length;
+            const reasonElem = document.getElementById('reasonText');
+            const counterElem = document.getElementById('reasonCounter');
+
+            reasonElem.style.opacity = '0';
+            reasonElem.style.transform = 'translateY(10px)';
+
+            setTimeout(() => {
+                counterElem.textContent = `Note #${currentReasonIdx + 1}`;
+                reasonElem.textContent = `"${reasons[currentReasonIdx]}"`;
+                reasonElem.style.opacity = '1';
+                reasonElem.style.transform = 'translateY(0)';
+            }, 200);
+        }
+
+        // -------------------------------------------------------------
+        // HEART CONFETTI BURST EFFECT
+        // -------------------------------------------------------------
+        function triggerHeartBurst(e) {
+            const x = e ? e.clientX / window.innerWidth : 0.5;
+            const y = e ? e.clientY / window.innerHeight : 0.5;
+            
+            confetti({
+                particleCount: 25,
+                spread: 60,
+                origin: { x: x, y: y },
+                colors: ['#f43f5e', '#facc15', '#be123c', '#ffe4e6'],
+                shapes: ['circle']
+            });
+        }
+
+        // -------------------------------------------------------------
+        // AUDIO SYNTHESIZER (WEB AUDIO API HEARTBEAT & SYNTH)
+        // -------------------------------------------------------------
+        let audioCtx = null;
+        let isPlayingAudio = false;
+        let beatInterval = null;
+
+        function toggleAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const btnText = document.getElementById('audioBtnText');
+            const icon = document.getElementById('audioIcon');
+
+            if (!isPlayingAudio) {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                startHeartbeat();
+                isPlayingAudio = true;
+                btnText.textContent = "Pause Soundscape";
+                icon.setAttribute('data-lucide', 'volume-x');
+                lucide.createIcons();
+                animateVisualizer(true);
+            } else {
+                stopHeartbeat();
+                isPlayingAudio = false;
+                btnText.textContent = "Play Heartbeat Sound";
+                icon.setAttribute('data-lucide', 'volume-2');
+                lucide.createIcons();
+                animateVisualizer(false);
+            }
+        }
+
+        function playHeartThump(freq, duration, delay) {
+            setTimeout(() => {
+                if (!isPlayingAudio || !audioCtx) return;
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + duration);
+
+                    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                } catch(e) {}
+            }, delay);
+        }
+
+        function startHeartbeat() {
+            beatInterval = setInterval(() => {
+                playHeartThump(80, 0.15, 0);
+                playHeartThump(60, 0.20, 180);
+            }, 1200);
+        }
+
+        function stopHeartbeat() {
+            if (beatInterval) clearInterval(beatInterval);
+        }
+
+        let vizInterval = null;
+        function animateVisualizer(active) {
+            const bars = document.querySelectorAll('.bar');
+            if (active) {
+                vizInterval = setInterval(() => {
+                    bars.forEach(bar => {
+                        const h = Math.floor(Math.random() * 28) + 6;
+                        bar.style.height = `${h}px`;
+                    });
+                }, 150);
+            } else {
+                if (vizInterval) clearInterval(vizInterval);
+                bars.forEach(bar => {
+                    bar.style.height = '8px';
+                });
+            }
+        }
+
+        // -------------------------------------------------------------
+        // COUPON REDEMPTION MODAL
+        // -------------------------------------------------------------
+        function redeemCoupon(btn, couponTitle) {
+            btn.classList.remove('bg-gold-500/20', 'hover:bg-gold-500', 'text-gold-300');
+            btn.classList.add('bg-rose-800', 'text-rose-200', 'cursor-not-allowed');
+            btn.textContent = 'Claimed ❤️';
+            btn.onclick = null;
+
+            document.getElementById('modalTitle').textContent = "Coupon Claimed, My King!";
+            document.getElementById('modalText').textContent = `You redeemed: "${couponTitle}". I cannot wait to give this to you, Robert!`;
+            document.getElementById('modalSubtext').textContent = "Show this screen to me anytime to collect your reward! ❤️";
+            document.getElementById('couponModal').classList.remove('hidden');
+
+            confetti({
+                particleCount: 50,
+                spread: 80,
+                origin: { y: 0.6 }
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('couponModal').classList.add('hidden');
+        }
+
+        // -------------------------------------------------------------
+        // PARTNER DASHBOARD MODAL & PIN VERIFICATION
+        // -------------------------------------------------------------
+        function togglePartnerDashboard() {
+            document.getElementById('partnerModal').classList.remove('hidden');
+        }
+
+        function closePartnerModal() {
+            document.getElementById('partnerModal').classList.add('hidden');
+        }
+
+        function verifyPin() {
+            const pin = document.getElementById('pinInput').value.trim();
+            if (pin === '1234' || pin === '') {
+                document.getElementById('pinBox').classList.add('hidden');
+                document.getElementById('responsesContainer').classList.remove('hidden');
+            } else {
+                alert('Incorrect PIN. Standard PIN is 1234.');
+            }
+        }
+
+        async function sendLoveSignal(e) {
+            triggerHeartBurst(e);
+
+            const btn = document.getElementById('loveBurstBtn');
+            if (btn) {
+                btn.classList.add('scale-110');
+                setTimeout(() => btn.classList.remove('scale-110'), 200);
+            }
+
+            // Save Love Burst Event to Firebase
+            if (window.saveEventToFirebase) {
+                await window.saveEventToFirebase('love_burst', '💖 LOVE BURST SENT BY ROBERT! 💖', 'Robert sent you a sudden explosion of love!');
+            }
+
+            document.getElementById('modalTitle').textContent = "Love Burst Sent!";
+            document.getElementById('modalText').textContent = "A Love Burst has been sent directly to my Partner Dashboard! I love you so much, Robert! You hold my whole heart forever and always! ❤️👑";
+            document.getElementById('modalSubtext').textContent = "You are my world!";
+            document.getElementById('couponModal').classList.remove('hidden');
+        }
+
+        // -------------------------------------------------------------
+        // CANVAS PARTICLE SYSTEM
+        // -------------------------------------------------------------
+        window.onload = function() {
+            const canvas = document.getElementById('particleCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            const particles = [];
+            const particleCount = 35;
+
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 12 + 6,
+                    speedY: Math.random() * 0.8 + 0.2,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    opacity: Math.random() * 0.6 + 0.2,
+                    color: Math.random() > 0.4 ? '#f43f5e' : '#facc15'
+                });
+            }
+
+            function drawHeart(ctx, x, y, size, color, opacity) {
+                ctx.save();
+                ctx.globalAlpha = opacity;
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                const d = size;
+                ctx.moveTo(x, y + d / 4);
+                ctx.quadraticCurveTo(x, y, x + d / 4, y);
+                ctx.quadraticCurveTo(x + d / 2, y, x + d / 2, y + d / 4);
+                ctx.quadraticCurveTo(x + d / 2, y, x + (d * 3) / 4, y);
+                ctx.quadraticCurveTo(x + d, y, x + d, y + d / 4);
+                ctx.quadraticCurveTo(x + d, y + d / 2, x + (d * 3) / 4, y + (d * 3) / 4);
+                ctx.lineTo(x + d / 2, y + d);
+                ctx.lineTo(x + d / 4, y + (d * 3) / 4);
+                ctx.quadraticCurveTo(x, y + d / 2, x, y + d / 4);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.y -= p.speedY;
+                    p.x += p.speedX;
+
+                    if (p.y < -20) {
+                        p.y = canvas.height + 20;
+                        p.x = Math.random() * canvas.width;
+                    }
+
+                    drawHeart(ctx, p.x, p.y, p.size, p.color, p.opacity);
+                });
+                requestAnimationFrame(animateParticles);
+            }
+
+            animateParticles();
+        };
+    </script>
+</body>
+</html>
