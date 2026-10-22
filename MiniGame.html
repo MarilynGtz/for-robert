@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King Robert's Clinic Escape & Soup Quest 👑🥣</title>
+    <title>King Robert's Clinic Quest 👑🥣</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
     <!-- TOP HEADER / HUD -->
     <header class="w-full max-w-md text-center py-2 z-10">
         <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/80 border border-amber-400/50 text-amber-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-lg">
-            <span>👑 King Robert's Chibi Quest</span>
+            <span>👑 King Robert's Pac-Clinic Quest</span>
         </div>
         <div class="flex justify-between items-center px-2 mt-2">
             <div class="text-left">
@@ -51,7 +51,7 @@
             </div>
             <div class="text-center">
                 <span class="text-[10px] text-amber-400 pixel-font block" id="levelName">LEVEL 1</span>
-                <span class="text-[9px] text-rose-200/80" id="objectiveText">Find the Exit Door!</span>
+                <span class="text-[9px] text-rose-200/80" id="objectiveText">Dodge moving IVs & reach exit!</span>
             </div>
             <div class="text-right">
                 <span class="text-[10px] text-rose-300 block">ITEM</span>
@@ -71,11 +71,11 @@
                 <button id="dialogBtn" onclick="closeDialog()" class="px-4 py-1.5 bg-amber-400 text-slate-950 font-extrabold rounded-md text-xs uppercase shadow-md active:scale-95">Continue</button>
             </div>
 
-            <!-- VICTORY OVERLAY SCREEN WITH CHIBI HUG/KISS IMAGE -->
-            <div id="victoryOverlay" class="absolute inset-0 bg-rose-950/95 flex flex-col items-center justify-center p-4 text-center space-y-2 hidden z-30">
-                <div id="chibiVictorySprite" class="w-28 h-28 mx-auto bg-contain bg-no-repeat bg-center" style="background-image: url('sprites.png'); background-position: 85% 98%;"></div>
+            <!-- VICTORY OVERLAY SCREEN -->
+            <div id="victoryOverlay" class="absolute inset-0 bg-rose-950/95 flex flex-col items-center justify-center p-4 text-center space-y-3 hidden z-30">
+                <div class="text-5xl animate-bounce">👑🥣👩🏽‍🦱</div>
                 <h2 class="pixel-font text-amber-300 text-xs sm:text-sm leading-snug">QUEST COMPLETE!</h2>
-                <p class="text-xs text-rose-100 max-w-xs">King Robert defeated the clinic boredom, made it back home, and got Marilyn's Healing Chicken Soup & hugs!</p>
+                <p class="text-xs text-rose-100 max-w-xs">King Robert dodge the IV drips, made it out of the clinic, and got Marilyn's Healing Chicken Soup & hugs!</p>
                 <div class="p-2.5 bg-rose-900/80 border border-amber-400/60 rounded-xl w-full text-center space-y-1">
                     <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">VIP REAL-LIFE COUPON</span>
                     <p class="text-xs font-bold text-white">🥣 1x Homemade Healing Chicken Soup & Massages</p>
@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <!-- TOUCH CONTROLS FOR PHONE (D-PAD & ACTION BUTTON) -->
+    <!-- TOUCH CONTROLS FOR PHONE -->
     <div class="w-full max-w-md px-4 pb-3 pt-1 z-10">
         <div class="flex items-center justify-between gap-2">
             <!-- D-PAD CONTROLLER -->
@@ -117,19 +117,13 @@
         const ctx = canvas.getContext('2d');
 
         const GRID_SIZE = 8;
-        const TILE_SIZE = 40; // 320x320 canvas
+        const TILE_SIZE = 40;
 
         let level = 1;
         let hp = 3;
         let player = { x: 1, y: 1 };
         let hasBlanket = false;
         let touchInterval = null;
-
-        // Load Sprite Sheet Image
-        const spriteSheet = new Image();
-        spriteSheet.src = 'sprites.png';
-        let spriteLoaded = false;
-        spriteSheet.onload = () => { spriteLoaded = true; drawGame(); };
 
         // Sound Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -149,50 +143,93 @@
             } catch(e){}
         }
 
+        // LEVEL DEFINITIONS WITH MOVING PAC-MAN STYLE IV DRIPS
         const levels = {
             1: {
                 name: "LEVEL 1: CLINIC ESCAPE",
-                objective: "Dodge IV lines & escape the room!",
+                objective: "Time your moves past the moving IVs!",
                 map: [
                     [1,1,1,1,1,1,1,1],
-                    [1,0,0,3,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
                     [1,0,1,1,0,1,0,1],
-                    [1,0,0,0,0,3,0,1],
+                    [1,0,0,0,0,0,0,1],
                     [1,1,1,0,1,1,0,1],
-                    [1,3,0,0,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
                     [1,0,1,1,1,0,2,1],
                     [1,1,1,1,1,1,1,1]
+                ],
+                patrols: [
+                    { x: 1, y: 1, dir: 1, minX: 1, maxX: 6, axis: 'x' },
+                    { x: 6, y: 3, dir: -1, minX: 1, maxX: 6, axis: 'x' },
+                    { x: 1, y: 5, dir: 1, minX: 1, maxX: 6, axis: 'x' }
                 ]
             },
             2: {
                 name: "LEVEL 2: COLD HALLWAY",
-                objective: "Grab the Warm Blanket 🛋️ & reach exit!",
+                objective: "Grab Blanket 🛋️ & avoid moving IVs!",
                 map: [
                     [1,1,1,1,1,1,1,1],
                     [1,0,0,0,1,4,0,1],
                     [1,0,1,0,1,1,0,1],
-                    [1,3,1,0,0,0,0,1],
+                    [1,0,1,0,0,0,0,1],
                     [1,0,1,1,1,0,1,1],
-                    [1,0,0,3,0,0,0,1],
+                    [1,0,0,0,0,0,0,1],
                     [1,1,1,0,1,1,2,1],
                     [1,1,1,1,1,1,1,1]
+                ],
+                patrols: [
+                    { x: 3, y: 1, dir: 1, minY: 1, maxY: 5, axis: 'y' },
+                    { x: 5, y: 3, dir: -1, minX: 3, maxX: 6, axis: 'x' }
                 ]
             },
             3: {
-                name: "LEVEL 3: MARILYN'S SOUP KITCHEN",
+                name: "LEVEL 3: MARILYN'S KITCHEN",
                 objective: "Walk to Marilyn & Soup 🥣!",
                 map: [
                     [1,1,1,1,1,1,1,1],
                     [1,0,0,0,0,0,0,1],
                     [1,0,1,1,1,1,0,1],
-                    [1,0,1,4,0,1,0,1], // Marilyn & Soup
+                    [1,0,1,4,0,1,0,1],
                     [1,0,1,0,0,1,0,1],
                     [1,0,0,0,0,0,0,1],
                     [1,1,1,0,0,1,1,1],
                     [1,1,1,1,1,1,1,1]
-                ]
+                ],
+                patrols: []
             }
         };
+
+        // PAC-MAN STYLE IV MOVEMENT TICK
+        setInterval(() => {
+            const currentPatrols = levels[level].patrols;
+            if (!currentPatrols) return;
+
+            currentPatrols.forEach(p => {
+                if (p.axis === 'x') {
+                    p.x += p.dir;
+                    if (p.x >= p.maxX || p.x <= p.minX) p.dir *= -1;
+                } else if (p.axis === 'y') {
+                    p.y += p.dir;
+                    if (p.y >= p.maxY || p.y <= p.minY) p.dir *= -1;
+                }
+
+                // Check collision with King Robert
+                if (p.x === player.x && p.y === player.y) {
+                    hp--;
+                    playSfx(100, 'sawtooth', 0.2);
+                    updateHearts();
+                    showDialog("Ouch! A moving IV drip hit you! Fall back!");
+                    player.x = 1;
+                    player.y = 1;
+                    if (hp <= 0) {
+                        showDialog("You got tired! Marilyn gives you a hug to heal you back up ❤️");
+                        hp = 3;
+                        updateHearts();
+                    }
+                }
+            });
+            drawGame();
+        }, 400); // Moves every 400ms like Pac-Man ghosts
 
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -204,11 +241,11 @@
                     const x = c * TILE_SIZE;
                     const y = r * TILE_SIZE;
 
-                    // Floor
+                    // Grid floor
                     ctx.fillStyle = (r + c) % 2 === 0 ? '#260d1d' : '#1d0916';
                     ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
 
-                    // Wall
+                    // Walls
                     if (tile === 1) {
                         ctx.fillStyle = '#581c2f';
                         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
@@ -222,41 +259,43 @@
                         ctx.font = '18px sans-serif';
                         ctx.fillText('🚪', x+8, y+26);
                     }
-                    // Obstacles (IV Drip)
-                    else if (tile === 3) {
-                        ctx.font = '20px sans-serif';
-                        ctx.fillText('💉', x+8, y+28);
-                    }
                     // Level 2 Blanket / Level 3 Marilyn & Soup
                     else if (tile === 4) {
                         if (level === 2) {
                             ctx.font = '22px sans-serif';
                             ctx.fillText('🛋️', x+8, y+28);
                         } else if (level === 3) {
-                            // Draw Marilyn Chibi Sprite next to Soup!
-                            if (spriteLoaded) {
-                                // Draw Marilyn Chibi (Row 1 Col 1 from Sprite Sheet)
-                                ctx.drawImage(spriteSheet, 40, 100, 180, 260, x-4, y-8, 42, 48);
-                            } else {
-                                ctx.font = '20px sans-serif';
-                                ctx.fillText('👩🏽‍🦱🥣', x, y+28);
-                            }
+                            ctx.font = '22px sans-serif';
+                            ctx.shadowColor = '#facc15';
+                            ctx.shadowBlur = 12;
+                            ctx.fillText('👩🏽‍🦱🥣', x, y+28);
+                            ctx.shadowBlur = 0;
                         }
                     }
                 }
             }
 
-            // Draw Player (King Robert Chibi Sprite)
-            const px = player.x * TILE_SIZE;
-            const py = player.y * TILE_SIZE;
-            
-            if (spriteLoaded) {
-                // Crop Robert Chibi (Suit guy row 5 from Sprite Sheet)
-                ctx.drawImage(spriteSheet, 40, 720, 180, 260, px-2, py-8, 42, 48);
-            } else {
-                ctx.font = '22px sans-serif';
-                ctx.fillText(hasBlanket ? '👑🧥' : '👑', px+6, py+28);
+            // Draw Patrol IV Drips (Pac-Man Ghost Style Movement)
+            if (levels[level].patrols) {
+                levels[level].patrols.forEach(p => {
+                    const px = p.x * TILE_SIZE;
+                    const py = p.y * TILE_SIZE;
+                    ctx.font = '22px sans-serif';
+                    ctx.shadowColor = '#f43f5e';
+                    ctx.shadowBlur = 10;
+                    ctx.fillText('💉', px+8, py+28);
+                    ctx.shadowBlur = 0;
+                });
             }
+
+            // Draw King Robert Player
+            const rx = player.x * TILE_SIZE;
+            const ry = player.y * TILE_SIZE;
+            ctx.font = '22px sans-serif';
+            ctx.shadowColor = '#facc15';
+            ctx.shadowBlur = 10;
+            ctx.fillText(hasBlanket ? '👑🧥' : '👑👨🏽', rx+2, ry+28);
+            ctx.shadowBlur = 0;
 
             updateActionButton();
         }
@@ -277,20 +316,6 @@
                 return;
             }
 
-            if (currentMap[newY][newX] === 3) {
-                hp--;
-                playSfx(100, 'sawtooth', 0.2);
-                updateHearts();
-                showDialog("Ouch! You bumped an IV line! Be careful King Robert!");
-                if (hp <= 0) {
-                    showDialog("You got tired! Marilyn gives you a hug to heal you back up ❤️");
-                    hp = 3;
-                    player = {x:1, y:1};
-                    updateHearts();
-                }
-                return;
-            }
-
             player.x = newX;
             player.y = newY;
             playSfx(300, 'sine', 0.05);
@@ -301,7 +326,7 @@
                     player = {x:1, y:1};
                     document.getElementById('levelName').innerText = levels[2].name;
                     document.getElementById('objectiveText').innerText = levels[2].objective;
-                    showDialog("Level 1 Escaped! You made it out of the clinic treatment room! 🚪✨");
+                    showDialog("Level 1 Escaped! You made it past the moving IV drips! 🚪✨");
                 } else if (level === 2) {
                     level = 3;
                     player = {x:1, y:1};
