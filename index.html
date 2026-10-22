@@ -1068,5 +1068,14 @@
             animateParticles();
         };
     </script>
+    <script>
+  (function() {
+    const password = prompt("Enter the secret code to view this page 👑:");
+    if (password !== "Robert") { // Change "robert" to whatever password you want!
+      alert("Incorrect password!");
+      document.body.innerHTML = "<div style='color:white;text-align:center;margin-top:20%;font-family:sans-serif;'><h1>🔒 Private Page</h1><p>This page is reserved for King Robert only.</p></div>";
+    }
+  })();
+</script>
 </body>
 </html>
