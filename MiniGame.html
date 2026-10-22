@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>King Robert's Clinic Escape & Soup Quest 👑🥣</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0d0408;
+            color: #fce7f3;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+        }
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+        }
+        .retro-border {
+            border: 4px solid #facc15;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.4), inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        canvas {
+            image-rendering: pixelated;
+            background: #180914;
+        }
+        .btn-touch {
+            touch-action: none;
+        }
+        .btn-touch:active {
+            transform: scale(0.92);
+            filter: brightness(1.2);
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between min-h-screen p-2 select-none">
+
+    <!-- TOP HEADER / HUD -->
+    <header class="w-full max-w-md text-center py-2 z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/80 border border-amber-400/50 text-amber-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-lg">
+            <span>👑 King Robert's Chibi Quest</span>
+        </div>
+        <div class="flex justify-between items-center px-2 mt-2">
+            <div class="text-left">
+                <span class="text-[10px] text-rose-300 block">HEALTH</span>
+                <div class="flex gap-1 text-base" id="healthHearts">❤️❤️❤️</div>
+            </div>
+            <div class="text-center">
+                <span class="text-[10px] text-amber-400 pixel-font block" id="levelName">LEVEL 1</span>
+                <span class="text-[9px] text-rose-200/80" id="objectiveText">Find the Exit Door!</span>
+            </div>
+            <div class="text-right">
+                <span class="text-[10px] text-rose-300 block">ITEM</span>
+                <span class="text-sm" id="itemSlot">🖐️ Bare Hands</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- GAME CANVAS CONTAINER -->
+    <div class="relative w-full max-w-md flex-1 flex items-center justify-center my-1">
+        <div class="relative w-full aspect-square max-h-[380px] retro-border rounded-xl overflow-hidden bg-rose-950">
+            <canvas id="gameCanvas" width="320" height="320" class="w-full h-full block"></canvas>
+            
+            <!-- OVERLAY MESSAGE DIALOG -->
+            <div id="dialogOverlay" class="absolute inset-x-2 bottom-2 bg-slate-950/95 border-2 border-amber-400 rounded-lg p-3 text-center text-xs space-y-2 hidden z-20">
+                <p id="dialogText" class="text-rose-100 font-semibold leading-snug">Notice text...</p>
+                <button id="dialogBtn" onclick="closeDialog()" class="px-4 py-1.5 bg-amber-400 text-slate-950 font-extrabold rounded-md text-xs uppercase shadow-md active:scale-95">Continue</button>
+            </div>
+
+            <!-- VICTORY OVERLAY SCREEN WITH CHIBI HUG/KISS IMAGE -->
+            <div id="victoryOverlay" class="absolute inset-0 bg-rose-950/95 flex flex-col items-center justify-center p-4 text-center space-y-2 hidden z-30">
+                <div id="chibiVictorySprite" class="w-28 h-28 mx-auto bg-contain bg-no-repeat bg-center" style="background-image: url('sprites.png'); background-position: 85% 98%;"></div>
+                <h2 class="pixel-font text-amber-300 text-xs sm:text-sm leading-snug">QUEST COMPLETE!</h2>
+                <p class="text-xs text-rose-100 max-w-xs">King Robert defeated the clinic boredom, made it back home, and got Marilyn's Healing Chicken Soup & hugs!</p>
+                <div class="p-2.5 bg-rose-900/80 border border-amber-400/60 rounded-xl w-full text-center space-y-1">
+                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">VIP REAL-LIFE COUPON</span>
+                    <p class="text-xs font-bold text-white">🥣 1x Homemade Healing Chicken Soup & Massages</p>
+                    <p class="text-[9px] text-rose-300 italic">Redeemable with Marilyn anytime you get home ❤️</p>
+                </div>
+                <button onclick="restartGame()" class="px-6 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold rounded-xl text-xs uppercase shadow-lg active:scale-95">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOUCH CONTROLS FOR PHONE (D-PAD & ACTION BUTTON) -->
+    <div class="w-full max-w-md px-4 pb-3 pt-1 z-10">
+        <div class="flex items-center justify-between gap-2">
+            <!-- D-PAD CONTROLLER -->
+            <div class="grid grid-cols-3 gap-1.5 w-36 h-36">
+                <div></div>
+                <button class="btn-touch bg-rose-900/90 border-2 border-amber-400/60 active:bg-amber-400 active:text-black text-white font-bold rounded-lg text-lg flex items-center justify-center shadow-md" ontouchstart="handleTouchStart('up')" ontouchend="handleTouchEnd('up')" onclick="movePlayer('up')">⬆️</button>
+                <div></div>
+                <button class="btn-touch bg-rose-900/90 border-2 border-amber-400/60 active:bg-amber-400 active:text-black text-white font-bold rounded-lg text-lg flex items-center justify-center shadow-md" ontouchstart="handleTouchStart('left')" ontouchend="handleTouchEnd('left')" onclick="movePlayer('left')">⬅️</button>
+                <div class="bg-rose-950/50 rounded-lg flex items-center justify-center text-[9px] text-amber-400 font-bold">MOVE</div>
+                <button class="btn-touch bg-rose-900/90 border-2 border-amber-400/60 active:bg-amber-400 active:text-black text-white font-bold rounded-lg text-lg flex items-center justify-center shadow-md" ontouchstart="handleTouchStart('right')" ontouchend="handleTouchEnd('right')" onclick="movePlayer('right')">➡️</button>
+                <div></div>
+                <button class="btn-touch bg-rose-900/90 border-2 border-amber-400/60 active:bg-amber-400 active:text-black text-white font-bold rounded-lg text-lg flex items-center justify-center shadow-md" ontouchstart="handleTouchStart('down')" ontouchend="handleTouchEnd('down')" onclick="movePlayer('down')">⬇️</button>
+                <div></div>
+            </div>
+
+            <!-- ACTION / INTERACT BUTTON -->
+            <div class="flex flex-col items-center justify-center">
+                <button id="actionBtn" onclick="interactAction()" class="btn-touch w-28 h-28 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-extrabold rounded-full border-4 border-amber-200 shadow-xl flex flex-col items-center justify-center text-center p-2 active:scale-95">
+                    <span class="text-2xl">🖐️</span>
+                    <span class="text-[10px] font-black uppercase tracking-tighter leading-tight mt-1" id="actionBtnLabel">INTERACT</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const GRID_SIZE = 8;
+        const TILE_SIZE = 40; // 320x320 canvas
+
+        let level = 1;
+        let hp = 3;
+        let player = { x: 1, y: 1 };
+        let hasBlanket = false;
+        let touchInterval = null;
+
+        // Load Sprite Sheet Image
+        const spriteSheet = new Image();
+        spriteSheet.src = 'sprites.png';
+        let spriteLoaded = false;
+        spriteSheet.onload = () => { spriteLoaded = true; drawGame(); };
+
+        // Sound Engine
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSfx(freq, type='sine', duration=0.1) {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        const levels = {
+            1: {
+                name: "LEVEL 1: CLINIC ESCAPE",
+                objective: "Dodge IV lines & escape the room!",
+                map: [
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,0,3,0,0,0,1],
+                    [1,0,1,1,0,1,0,1],
+                    [1,0,0,0,0,3,0,1],
+                    [1,1,1,0,1,1,0,1],
+                    [1,3,0,0,0,0,0,1],
+                    [1,0,1,1,1,0,2,1],
+                    [1,1,1,1,1,1,1,1]
+                ]
+            },
+            2: {
+                name: "LEVEL 2: COLD HALLWAY",
+                objective: "Grab the Warm Blanket 🛋️ & reach exit!",
+                map: [
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,0,0,1,4,0,1],
+                    [1,0,1,0,1,1,0,1],
+                    [1,3,1,0,0,0,0,1],
+                    [1,0,1,1,1,0,1,1],
+                    [1,0,0,3,0,0,0,1],
+                    [1,1,1,0,1,1,2,1],
+                    [1,1,1,1,1,1,1,1]
+                ]
+            },
+            3: {
+                name: "LEVEL 3: MARILYN'S SOUP KITCHEN",
+                objective: "Walk to Marilyn & Soup 🥣!",
+                map: [
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,1,4,0,1,0,1], // Marilyn & Soup
+                    [1,0,1,0,0,1,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,1,1,0,0,1,1,1],
+                    [1,1,1,1,1,1,1,1]
+                ]
+            }
+        };
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const currentMap = levels[level].map;
+
+            for (let r = 0; r < GRID_SIZE; r++) {
+                for (let c = 0; c < GRID_SIZE; c++) {
+                    const tile = currentMap[r][c];
+                    const x = c * TILE_SIZE;
+                    const y = r * TILE_SIZE;
+
+                    // Floor
+                    ctx.fillStyle = (r + c) % 2 === 0 ? '#260d1d' : '#1d0916';
+                    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+
+                    // Wall
+                    if (tile === 1) {
+                        ctx.fillStyle = '#581c2f';
+                        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+                        ctx.strokeStyle = '#881337';
+                        ctx.strokeRect(x+2, y+2, TILE_SIZE-4, TILE_SIZE-4);
+                    } 
+                    // Exit Door
+                    else if (tile === 2) {
+                        ctx.fillStyle = '#ca8a04';
+                        ctx.fillRect(x+6, y+4, TILE_SIZE-12, TILE_SIZE-4);
+                        ctx.font = '18px sans-serif';
+                        ctx.fillText('🚪', x+8, y+26);
+                    }
+                    // Obstacles (IV Drip)
+                    else if (tile === 3) {
+                        ctx.font = '20px sans-serif';
+                        ctx.fillText('💉', x+8, y+28);
+                    }
+                    // Level 2 Blanket / Level 3 Marilyn & Soup
+                    else if (tile === 4) {
+                        if (level === 2) {
+                            ctx.font = '22px sans-serif';
+                            ctx.fillText('🛋️', x+8, y+28);
+                        } else if (level === 3) {
+                            // Draw Marilyn Chibi Sprite next to Soup!
+                            if (spriteLoaded) {
+                                // Draw Marilyn Chibi (Row 1 Col 1 from Sprite Sheet)
+                                ctx.drawImage(spriteSheet, 40, 100, 180, 260, x-4, y-8, 42, 48);
+                            } else {
+                                ctx.font = '20px sans-serif';
+                                ctx.fillText('👩🏽‍🦱🥣', x, y+28);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Draw Player (King Robert Chibi Sprite)
+            const px = player.x * TILE_SIZE;
+            const py = player.y * TILE_SIZE;
+            
+            if (spriteLoaded) {
+                // Crop Robert Chibi (Suit guy row 5 from Sprite Sheet)
+                ctx.drawImage(spriteSheet, 40, 720, 180, 260, px-2, py-8, 42, 48);
+            } else {
+                ctx.font = '22px sans-serif';
+                ctx.fillText(hasBlanket ? '👑🧥' : '👑', px+6, py+28);
+            }
+
+            updateActionButton();
+        }
+
+        function movePlayer(dir) {
+            let dx = 0, dy = 0;
+            if (dir === 'up') dy = -1;
+            if (dir === 'down') dy = 1;
+            if (dir === 'left') dx = -1;
+            if (dir === 'right') dx = 1;
+
+            const newX = player.x + dx;
+            const newY = player.y + dy;
+            const currentMap = levels[level].map;
+
+            if (currentMap[newY][newX] === 1) {
+                playSfx(150, 'square', 0.08);
+                return;
+            }
+
+            if (currentMap[newY][newX] === 3) {
+                hp--;
+                playSfx(100, 'sawtooth', 0.2);
+                updateHearts();
+                showDialog("Ouch! You bumped an IV line! Be careful King Robert!");
+                if (hp <= 0) {
+                    showDialog("You got tired! Marilyn gives you a hug to heal you back up ❤️");
+                    hp = 3;
+                    player = {x:1, y:1};
+                    updateHearts();
+                }
+                return;
+            }
+
+            player.x = newX;
+            player.y = newY;
+            playSfx(300, 'sine', 0.05);
+
+            if (currentMap[newY][newX] === 2) {
+                if (level === 1) {
+                    level = 2;
+                    player = {x:1, y:1};
+                    document.getElementById('levelName').innerText = levels[2].name;
+                    document.getElementById('objectiveText').innerText = levels[2].objective;
+                    showDialog("Level 1 Escaped! You made it out of the clinic treatment room! 🚪✨");
+                } else if (level === 2) {
+                    level = 3;
+                    player = {x:1, y:1};
+                    document.getElementById('levelName').innerText = levels[3].name;
+                    document.getElementById('objectiveText').innerText = levels[3].objective;
+                    showDialog("Welcome to Marilyn's Kitchen! Walk up to Marilyn & Soup 🥣!");
+                }
+            }
+
+            drawGame();
+        }
+
+        function updateActionButton() {
+            const currentMap = levels[level].map;
+            const label = document.getElementById('actionBtnLabel');
+
+            if (level === 3 && currentMap[player.y][player.x] === 4) {
+                label.innerText = "EAT SOUP! 🥣";
+            } else if (level === 2 && currentMap[player.y][player.x] === 4) {
+                label.innerText = "GRAB BLANKET 🛋️";
+            } else {
+                label.innerText = "INTERACT";
+            }
+        }
+
+        function interactAction() {
+            const currentMap = levels[level].map;
+            
+            if (level === 3 && currentMap[player.y][player.x] === 4) {
+                playSfx(587, 'sine', 0.3);
+                playSfx(880, 'sine', 0.4);
+                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                document.getElementById('victoryOverlay').classList.remove('hidden');
+                return;
+            }
+
+            if (level === 2 && currentMap[player.y][player.x] === 4) {
+                hasBlanket = true;
+                levels[2].map[player.y][player.x] = 0;
+                document.getElementById('itemSlot').innerText = "🛋️ Warm Blanket";
+                showDialog("You grabbed Marilyn's Cozy Blanket! Warmth +100 🔥");
+                playSfx(523, 'sine', 0.2);
+                drawGame();
+                return;
+            }
+
+            showDialog("King Robert is looking around... Keep moving toward the objective!");
+        }
+
+        function updateHearts() {
+            let heartsStr = "";
+            for (let i = 0; i < hp; i++) heartsStr += "❤️";
+            document.getElementById('healthHearts').innerText = heartsStr || "💔";
+        }
+
+        function showDialog(text) {
+            document.getElementById('dialogText').innerText = text;
+            document.getElementById('dialogOverlay').classList.remove('hidden');
+        }
+
+        function closeDialog() {
+            document.getElementById('dialogOverlay').classList.add('hidden');
+        }
+
+        function restartGame() {
+            level = 1;
+            hp = 3;
+            player = {x:1, y:1};
+            hasBlanket = false;
+            document.getElementById('itemSlot').innerText = "🖐️ Bare Hands";
+            document.getElementById('levelName').innerText = levels[1].name;
+            document.getElementById('objectiveText').innerText = levels[1].objective;
+            document.getElementById('victoryOverlay').classList.add('hidden');
+            updateHearts();
+            drawGame();
+        }
+
+        function handleTouchStart(dir) {
+            movePlayer(dir);
+            touchInterval = setInterval(() => movePlayer(dir), 200);
+        }
+        function handleTouchEnd() {
+            if (touchInterval) clearInterval(touchInterval);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowUp' || e.key === 'w') movePlayer('up');
+            if (e.key === 'ArrowDown' || e.key === 's') movePlayer('down');
+            if (e.key === 'ArrowLeft' || e.key === 'a') movePlayer('left');
+            if (e.key === 'ArrowRight' || e.key === 'd') movePlayer('right');
+            if (e.key === ' ' || e.key === 'Enter') interactAction();
+        });
+
+        drawGame();
+    </script>
+</body>
+</html>
