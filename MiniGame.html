@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King Robert's Clinic Quest 👑🥣</title>
+    <title>King Robert's Epic Quest 👑🎮</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -40,54 +43,62 @@
 <body class="flex flex-col items-center justify-between min-h-screen p-2 select-none">
 
     <!-- TOP HEADER / HUD -->
-    <header class="w-full max-w-md text-center py-2 z-10">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/80 border border-amber-400/50 text-amber-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider shadow-lg">
-            <span>👑 King Robert's Clinic Quest</span>
+    <header class="w-full max-w-md text-center py-1.5 z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-rose-950/80 border border-amber-400/50 text-amber-300 text-[10px] font-bold uppercase tracking-wider shadow-lg">
+            <span>👑 King Robert's 5-Level Quest</span>
         </div>
-        <div class="flex justify-between items-center px-2 mt-2">
+        <div class="flex justify-between items-center px-2 mt-1">
             <div class="text-left">
-                <span class="text-[10px] text-rose-300 block">HEALTH</span>
-                <div class="flex gap-1 text-base" id="healthHearts">❤️❤️❤️</div>
+                <span class="text-[9px] text-rose-300 block">HEALTH</span>
+                <div class="flex gap-1 text-sm" id="healthHearts">❤️❤️❤️</div>
             </div>
             <div class="text-center">
-                <span class="text-[10px] text-amber-400 pixel-font block" id="levelName">LEVEL 1</span>
-                <span class="text-[9px] text-rose-200/80" id="objectiveText">Dodge moving IVs & reach exit!</span>
+                <span class="text-[9px] text-amber-400 pixel-font block" id="levelName">LVL 1: CLINIC WARD</span>
+                <span class="text-[9px] text-rose-200/80" id="objectiveText">Dodge IVs & reach exit!</span>
             </div>
             <div class="text-right">
-                <span class="text-[10px] text-rose-300 block">ITEM</span>
-                <span class="text-sm" id="itemSlot">🖐️ Bare Hands</span>
+                <span class="text-[9px] text-rose-300 block">STAGE</span>
+                <span class="text-xs font-bold text-amber-300" id="stageProgress">1 / 5</span>
             </div>
         </div>
     </header>
 
     <!-- GAME CANVAS CONTAINER -->
     <div class="relative w-full max-w-md flex-1 flex items-center justify-center my-1">
-        <div class="relative w-full aspect-square max-h-[380px] retro-border rounded-xl overflow-hidden bg-rose-950">
+        <div class="relative w-full aspect-square max-h-[360px] retro-border rounded-xl overflow-hidden bg-rose-950">
             <canvas id="gameCanvas" width="320" height="320" class="w-full h-full block"></canvas>
             
             <!-- OVERLAY MESSAGE DIALOG -->
             <div id="dialogOverlay" class="absolute inset-x-2 bottom-2 bg-slate-950/95 border-2 border-amber-400 rounded-lg p-3 text-center text-xs space-y-2 hidden z-20">
                 <p id="dialogText" class="text-rose-100 font-semibold leading-snug">Notice text...</p>
-                <button id="dialogBtn" onclick="closeDialog()" class="px-4 py-1.5 bg-amber-400 text-slate-950 font-extrabold rounded-md text-xs uppercase shadow-md active:scale-95">Continue</button>
+                <button id="dialogBtn" onclick="closeDialog()" class="px-4 py-1 bg-amber-400 text-slate-950 font-extrabold rounded-md text-xs uppercase shadow-md active:scale-95">Continue</button>
             </div>
 
-            <!-- VICTORY OVERLAY SCREEN -->
-            <div id="victoryOverlay" class="absolute inset-0 bg-rose-950/95 flex flex-col items-center justify-center p-4 text-center space-y-3 hidden z-30">
-                <div class="text-5xl animate-bounce">👑🥣👩🏽‍🦱</div>
-                <h2 class="pixel-font text-amber-300 text-xs sm:text-sm leading-snug">QUEST COMPLETE!</h2>
-                <p class="text-xs text-rose-100 max-w-xs">King Robert dodged the IV drips, made it out of the clinic, and got Marilyn's Healing Chicken Soup & hugs!</p>
-                <div class="p-2.5 bg-rose-900/80 border border-amber-400/60 rounded-xl w-full text-center space-y-1">
-                    <span class="text-[10px] text-amber-300 font-bold uppercase tracking-wider block">VIP REAL-LIFE COUPON</span>
-                    <p class="text-xs font-bold text-white">🥣 1x Homemade Healing Chicken Soup & Massages</p>
-                    <p class="text-[9px] text-rose-300 italic">Redeemable with Marilyn anytime you get home ❤️</p>
+            <!-- VICTORY & SURVEY OVERLAY SCREEN -->
+            <div id="victoryOverlay" class="absolute inset-0 bg-rose-950/95 flex flex-col items-center justify-center p-3 text-center space-y-2 hidden z-30 overflow-y-auto">
+                <div class="text-4xl animate-bounce" id="victoryEmoji">🏆👑</div>
+                <h2 class="pixel-font text-amber-300 text-xs leading-snug" id="victoryTitle">QUEST COMPLETE!</h2>
+                <p class="text-[11px] text-rose-100 max-w-xs leading-tight" id="victoryDesc">You beat all 5 levels!</p>
+
+                <!-- SURVEY SECTION -->
+                <div id="surveyBox" class="p-2 bg-slate-900/90 border border-amber-400/60 rounded-xl w-full text-center space-y-2">
+                    <p class="text-[11px] font-bold text-amber-300">How do you like this game, King?</p>
+                    <div class="grid grid-cols-2 gap-1.5" id="surveyButtons">
+                        <button onclick="submitFeedback('Cheesy 🧀')" class="px-2 py-1.5 bg-rose-900 hover:bg-rose-800 text-rose-100 border border-amber-400/40 rounded-lg text-[10px] font-bold active:scale-95">🧀 Cheesy</button>
+                        <button onclick="submitFeedback('Cute 💕')" class="px-2 py-1.5 bg-rose-900 hover:bg-rose-800 text-rose-100 border border-amber-400/40 rounded-lg text-[10px] font-bold active:scale-95">💕 Cute</button>
+                        <button onclick="submitFeedback('Funny 😂')" class="px-2 py-1.5 bg-rose-900 hover:bg-rose-800 text-rose-100 border border-amber-400/40 rounded-lg text-[10px] font-bold active:scale-95">😂 Funny</button>
+                        <button onclick="submitFeedback('Dumb 🤪')" class="px-2 py-1.5 bg-rose-900 hover:bg-rose-800 text-rose-100 border border-amber-400/40 rounded-lg text-[10px] font-bold active:scale-95">🤪 Dumb</button>
+                    </div>
+                    <p id="surveyThanks" class="text-[10px] text-emerald-300 font-bold hidden">Response saved to Marilyn's Dashboard! ❤️</p>
                 </div>
-                <button onclick="restartGame()" class="px-6 py-2 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold rounded-xl text-xs uppercase shadow-lg active:scale-95">Play Again</button>
+
+                <button onclick="restartGame()" class="px-5 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold rounded-lg text-xs uppercase shadow-lg active:scale-95">Play Again</button>
             </div>
         </div>
     </div>
 
     <!-- TOUCH CONTROLS FOR PHONE -->
-    <div class="w-full max-w-md px-4 pb-3 pt-1 z-10">
+    <div class="w-full max-w-md px-4 pb-2 pt-1 z-10">
         <div class="flex items-center justify-between gap-2">
             <!-- D-PAD CONTROLLER -->
             <div class="grid grid-cols-3 gap-1.5 w-36 h-36">
@@ -113,6 +124,15 @@
     </div>
 
     <script>
+        // FIREBASE SETUP
+        const firebaseConfig = {
+            projectId: "for-robert",
+            authDomain: "for-robert.firebaseapp.com",
+            storageBucket: "for-robert.appspot.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -122,8 +142,8 @@
         let level = 1;
         let hp = 3;
         let player = { x: 1, y: 1 };
-        let hasBlanket = false;
         let touchInterval = null;
+        let selectedOutcome = "";
 
         // Sound Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -143,11 +163,11 @@
             } catch(e){}
         }
 
-        // MAPS & STRICT PATH PATROLS
+        // 5 DISTINCT LEVELS
         const levels = {
             1: {
-                name: "LEVEL 1: CLINIC ESCAPE",
-                objective: "Time your moves past the moving IVs!",
+                name: "LVL 1: CLINIC WARD",
+                objective: "Pac-Man style: Dodge moving IVs!",
                 map: [
                     [1,1,1,1,1,1,1,1],
                     [1,0,0,0,0,0,0,1],
@@ -159,17 +179,17 @@
                     [1,1,1,1,1,1,1,1]
                 ],
                 patrols: [
-                    { x: 1, y: 1, dx: 1, dy: 0 },
-                    { x: 6, y: 3, dx: -1, dy: 0 },
-                    { x: 1, y: 5, dx: 1, dy: 0 }
+                    { x: 1, y: 1, dx: 1, dy: 0, icon: '💉' },
+                    { x: 6, y: 3, dx: -1, dy: 0, icon: '💉' },
+                    { x: 1, y: 5, dx: 1, dy: 0, icon: '💉' }
                 ]
             },
             2: {
-                name: "LEVEL 2: COLD HALLWAY",
-                objective: "Grab Blanket 🛋️ & avoid moving IVs!",
+                name: "LVL 2: ICE HALLWAY",
+                objective: "Slippery floor! Avoid cold drafts ❄️!",
                 map: [
                     [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,1,4,0,1],
+                    [1,0,0,0,1,0,0,1],
                     [1,0,1,0,1,1,0,1],
                     [1,0,1,0,0,0,0,1],
                     [1,0,1,1,1,0,1,1],
@@ -178,18 +198,55 @@
                     [1,1,1,1,1,1,1,1]
                 ],
                 patrols: [
-                    { x: 3, y: 1, dx: 0, dy: 1 },
-                    { x: 5, y: 5, dx: -1, dy: 0 }
+                    { x: 3, y: 1, dx: 0, dy: 1, icon: '❄️' },
+                    { x: 5, y: 5, dx: -1, dy: 0, icon: '❄️' }
                 ]
             },
             3: {
-                name: "LEVEL 3: MARILYN'S KITCHEN",
-                objective: "Walk to Marilyn & Soup 🥣!",
+                name: "LVL 3: WORK STACK",
+                objective: "Dodge heavy work paper stacks 📚!",
+                map: [
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,1,0,1,0,0,1],
+                    [1,0,0,0,1,1,0,1],
+                    [1,1,1,0,0,0,0,1],
+                    [1,0,0,0,1,0,0,1],
+                    [1,0,1,0,1,0,2,1],
+                    [1,1,1,1,1,1,1,1]
+                ],
+                patrols: [
+                    { x: 1, y: 3, dx: 1, dy: 0, icon: '📚' },
+                    { x: 5, y: 1, dx: 0, dy: 1, icon: '📚' }
+                ]
+            },
+            4: {
+                name: "LVL 4: TRAFFIC DRIVE",
+                objective: "Frogger style: Dodge busy cars 🚗!",
                 map: [
                     [1,1,1,1,1,1,1,1],
                     [1,0,0,0,0,0,0,1],
                     [1,0,1,1,1,1,0,1],
-                    [1,0,1,4,0,1,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,1,1,0,0,0,2,1],
+                    [1,1,1,1,1,1,1,1]
+                ],
+                patrols: [
+                    { x: 1, y: 1, dx: 1, dy: 0, icon: '🚗' },
+                    { x: 6, y: 3, dx: -1, dy: 0, icon: '🏎️' },
+                    { x: 1, y: 5, dx: 1, dy: 0, icon: '🚗' }
+                ]
+            },
+            5: {
+                name: "LVL 5: KITCHEN CHOICE",
+                objective: "Choose: Eat Out 🍕 OR Marilyn's Cooking 🥣!",
+                map: [
+                    [1,1,1,1,1,1,1,1],
+                    [1,0,0,0,0,0,0,1],
+                    [1,0,1,1,1,1,0,1],
+                    [1,0,5,0,0,6,0,1], // 5: Eat Out 🍕, 6: Marilyn's Cooking 🥣
                     [1,0,1,0,0,1,0,1],
                     [1,0,0,0,0,0,0,1],
                     [1,1,1,0,0,1,1,1],
@@ -199,7 +256,7 @@
             }
         };
 
-        // PATH-CHECKING PATROL TICK (BOUNCES OFF WALLS STRICTLY)
+        // PATROL TICK FOR MOVING OBSTACLES
         setInterval(() => {
             const currentPatrols = levels[level].patrols;
             const currentMap = levels[level].map;
@@ -209,7 +266,6 @@
                 let nextX = p.x + p.dx;
                 let nextY = p.y + p.dy;
 
-                // Check if next tile is a wall (1) or out of bounds -> Turn around!
                 if (currentMap[nextY] && currentMap[nextY][nextX] === 1) {
                     p.dx *= -1;
                     p.dy *= -1;
@@ -217,18 +273,16 @@
                     nextY = p.y + p.dy;
                 }
 
-                // Move if clear
                 if (currentMap[nextY] && currentMap[nextY][nextX] !== 1) {
                     p.x = nextX;
                     p.y = nextY;
                 }
 
-                // Check collision with King Robert
                 if (p.x === player.x && p.y === player.y) {
                     hp--;
                     playSfx(100, 'sawtooth', 0.2);
                     updateHearts();
-                    showDialog("Ouch! A moving IV drip hit you! Fall back!");
+                    showDialog("Ouch! You bumped an obstacle! Fall back!");
                     player.x = 1;
                     player.y = 1;
                     if (hp <= 0) {
@@ -239,7 +293,7 @@
                 }
             });
             drawGame();
-        }, 400);
+        }, 380);
 
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -269,23 +323,24 @@
                         ctx.font = '18px sans-serif';
                         ctx.fillText('🚪', x+8, y+26);
                     }
-                    // Level 2 Blanket / Level 3 Marilyn & Soup
-                    else if (tile === 4) {
-                        if (level === 2) {
-                            ctx.font = '22px sans-serif';
-                            ctx.fillText('🛋️', x+8, y+28);
-                        } else if (level === 3) {
-                            ctx.font = '22px sans-serif';
-                            ctx.shadowColor = '#facc15';
-                            ctx.shadowBlur = 12;
-                            ctx.fillText('👩🏽‍🦱🥣', x, y+28);
-                            ctx.shadowBlur = 0;
-                        }
+                    // Level 5 Choices
+                    else if (tile === 5) { // Eat Out
+                        ctx.font = '22px sans-serif';
+                        ctx.shadowColor = '#f97316';
+                        ctx.shadowBlur = 10;
+                        ctx.fillText('🍕', x+8, y+28);
+                        ctx.shadowBlur = 0;
+                    } else if (tile === 6) { // Marilyn's Cooking
+                        ctx.font = '22px sans-serif';
+                        ctx.shadowColor = '#facc15';
+                        ctx.shadowBlur = 10;
+                        ctx.fillText('👩🏽‍🦱🥣', x, y+28);
+                        ctx.shadowBlur = 0;
                     }
                 }
             }
 
-            // Draw Patrol Syringes / IV Drips
+            // Draw Patrol Obstacles
             if (levels[level].patrols) {
                 levels[level].patrols.forEach(p => {
                     const px = p.x * TILE_SIZE;
@@ -293,12 +348,12 @@
                     ctx.font = '22px sans-serif';
                     ctx.shadowColor = '#f43f5e';
                     ctx.shadowBlur = 10;
-                    ctx.fillText('💉', px+8, py+28);
+                    ctx.fillText(p.icon, px+8, py+28);
                     ctx.shadowBlur = 0;
                 });
             }
 
-            // Draw King Robert Player - ONLY THE CROWN (Centered & Glowing)
+            // Draw King Robert Player (Crown)
             const rx = player.x * TILE_SIZE;
             const ry = player.y * TILE_SIZE;
             ctx.font = '24px sans-serif';
@@ -331,19 +386,12 @@
             playSfx(300, 'sine', 0.05);
 
             if (currentMap[newY][newX] === 2) {
-                if (level === 1) {
-                    level = 2;
-                    player = {x:1, y:1};
-                    document.getElementById('levelName').innerText = levels[2].name;
-                    document.getElementById('objectiveText').innerText = levels[2].objective;
-                    showDialog("Level 1 Escaped! You made it past the moving IV drips! 🚪✨");
-                } else if (level === 2) {
-                    level = 3;
-                    player = {x:1, y:1};
-                    document.getElementById('levelName').innerText = levels[3].name;
-                    document.getElementById('objectiveText').innerText = levels[3].objective;
-                    showDialog("Welcome to Marilyn's Kitchen! Walk up to Marilyn & Soup 🥣!");
-                }
+                level++;
+                player = {x:1, y:1};
+                document.getElementById('levelName').innerText = levels[level].name;
+                document.getElementById('objectiveText').innerText = levels[level].objective;
+                document.getElementById('stageProgress').innerText = level + " / 5";
+                showDialog(`Stage Cleared! Welcome to ${levels[level].name}! ✨`);
             }
 
             drawGame();
@@ -353,10 +401,10 @@
             const currentMap = levels[level].map;
             const label = document.getElementById('actionBtnLabel');
 
-            if (level === 3 && currentMap[player.y][player.x] === 4) {
-                label.innerText = "EAT SOUP! 🥣";
-            } else if (level === 2 && currentMap[player.y][player.x] === 4) {
-                label.innerText = "GRAB BLANKET 🛋️";
+            if (level === 5 && currentMap[player.y][player.x] === 5) {
+                label.innerText = "EAT OUT 🍕";
+            } else if (level === 5 && currentMap[player.y][player.x] === 6) {
+                label.innerText = "MARILYN 🥣";
             } else {
                 label.innerText = "INTERACT";
             }
@@ -365,25 +413,56 @@
         function interactAction() {
             const currentMap = levels[level].map;
             
-            if (level === 3 && currentMap[player.y][player.x] === 4) {
-                playSfx(587, 'sine', 0.3);
-                playSfx(880, 'sine', 0.4);
-                confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
-                document.getElementById('victoryOverlay').classList.remove('hidden');
-                return;
-            }
-
-            if (level === 2 && currentMap[player.y][player.x] === 4) {
-                hasBlanket = true;
-                levels[2].map[player.y][player.x] = 0;
-                document.getElementById('itemSlot').innerText = "🛋️ Warm Blanket";
-                showDialog("You grabbed Marilyn's Cozy Blanket! Warmth +100 🔥");
-                playSfx(523, 'sine', 0.2);
-                drawGame();
-                return;
+            if (level === 5) {
+                if (currentMap[player.y][player.x] === 5) { // Eat Out
+                    selectedOutcome = "Eat Out 🍕";
+                    finishGame("🍕 Pizza & Takeout Date!", "King Robert chose to Eat Out! A delicious treat date locked in!");
+                    return;
+                } else if (currentMap[player.y][player.x] === 6) { // Marilyn's Cooking
+                    selectedOutcome = "Marilyn's Cooking 🥣";
+                    finishGame("🥣 Marilyn's Homemade Healing Soup!", "King Robert chose Marilyn's Cooking! Homemade soup & massages coming right up!");
+                    return;
+                }
             }
 
             showDialog("King Robert is looking around... Keep moving toward the objective!");
+        }
+
+        function finishGame(title, desc) {
+            playSfx(587, 'sine', 0.3);
+            playSfx(880, 'sine', 0.4);
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+
+            document.getElementById('victoryTitle').innerText = title;
+            document.getElementById('victoryDesc').innerText = desc;
+            document.getElementById('victoryOverlay').classList.remove('hidden');
+
+            // Save choice outcome to Firestore
+            try {
+                db.collection("checkins").add({
+                    feeling: `Game Outcome: ${selectedOutcome}`,
+                    type: "game_choice",
+                    date: new Date().toLocaleString(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e){}
+        }
+
+        function submitFeedback(rating) {
+            playSfx(523, 'sine', 0.2);
+            document.getElementById('surveyButtons').classList.add('hidden');
+            document.getElementById('surveyThanks').classList.remove('hidden');
+
+            // Save rating survey to Firestore
+            try {
+                db.collection("checkins").add({
+                    feeling: `Game Rating: ${rating}`,
+                    note: `Outcome chosen was: ${selectedOutcome}`,
+                    type: "game_feedback",
+                    date: new Date().toLocaleString(),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch(e){}
         }
 
         function updateHearts() {
@@ -405,11 +484,12 @@
             level = 1;
             hp = 3;
             player = {x:1, y:1};
-            hasBlanket = false;
-            document.getElementById('itemSlot').innerText = "🖐️ Bare Hands";
             document.getElementById('levelName').innerText = levels[1].name;
             document.getElementById('objectiveText').innerText = levels[1].objective;
+            document.getElementById('stageProgress').innerText = "1 / 5";
             document.getElementById('victoryOverlay').classList.add('hidden');
+            document.getElementById('surveyButtons').classList.remove('hidden');
+            document.getElementById('surveyThanks').classList.add('hidden');
             updateHearts();
             drawGame();
         }
