@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>King Robert's Epic Quest 👑🎮</title>
+    <title>King Robert's Retro Adventure 👑</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Firebase SDKs -->
@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #0d0408;
+            background-color: #0b0308;
             color: #fce7f3;
             font-family: 'Plus Jakarta Sans', sans-serif;
             touch-action: manipulation;
@@ -25,18 +25,18 @@
         }
         .retro-border {
             border: 4px solid #facc15;
-            box-shadow: 0 0 15px rgba(250, 204, 21, 0.4), inset 0 0 10px rgba(0,0,0,0.8);
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.4), inset 0 0 12px rgba(0,0,0,0.9);
         }
         canvas {
             image-rendering: pixelated;
-            background: #180914;
+            background: #120510;
         }
         .btn-touch {
             touch-action: none;
         }
         .btn-touch:active {
             transform: scale(0.92);
-            filter: brightness(1.2);
+            filter: brightness(1.25);
         }
     </style>
 </head>
@@ -45,7 +45,7 @@
     <!-- TOP HEADER / HUD -->
     <header class="w-full max-w-md text-center py-1.5 z-10">
         <div class="inline-flex items-center gap-2 px-3 py-0.5 rounded-full bg-rose-950/80 border border-amber-400/50 text-amber-300 text-[10px] font-bold uppercase tracking-wider shadow-lg">
-            <span>👑 King Robert's 5-Level Quest</span>
+            <span>👑 King Robert's Quest</span>
         </div>
         <div class="flex justify-between items-center px-2 mt-1">
             <div class="text-left">
@@ -53,12 +53,12 @@
                 <div class="flex gap-1 text-sm" id="healthHearts">❤️❤️❤️</div>
             </div>
             <div class="text-center">
-                <span class="text-[9px] text-amber-400 pixel-font block" id="levelName">LVL 1: CLINIC WARD</span>
-                <span class="text-[9px] text-rose-200/80" id="objectiveText">Dodge IVs & reach exit!</span>
+                <span class="text-[9px] text-amber-400 pixel-font block" id="levelName">STAGE 1: CLINIC ESCAPE</span>
+                <span class="text-[9px] text-rose-200/80" id="objectiveText">Find the exit door 🚪!</span>
             </div>
             <div class="text-right">
-                <span class="text-[9px] text-rose-300 block">STAGE</span>
-                <span class="text-xs font-bold text-amber-300" id="stageProgress">1 / 5</span>
+                <span class="text-[9px] text-rose-300 block">LEVEL</span>
+                <span class="text-xs font-bold text-amber-300 pixel-font" id="stageProgress">1/5</span>
             </div>
         </div>
     </header>
@@ -136,14 +136,13 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const GRID_SIZE = 8;
-        const TILE_SIZE = 40;
-
         let level = 1;
         let hp = 3;
-        let player = { x: 1, y: 1 };
         let touchInterval = null;
         let selectedOutcome = "";
+
+        // RETRO PLAYER POSITION (Continuous pixel-based motion)
+        let player = { x: 30, y: 30, speed: 10, size: 24 };
 
         // Sound Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -163,203 +162,132 @@
             } catch(e){}
         }
 
-        // 5 DISTINCT LEVELS
+        // 5 TOP-DOWN RETRO ROOM MAPS
         const levels = {
             1: {
-                name: "LVL 1: CLINIC WARD",
-                objective: "Pac-Man style: Dodge moving IVs!",
-                map: [
-                    [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,1,0,1,0,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,1,1,0,1,1,0,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,1,1,0,2,1],
-                    [1,1,1,1,1,1,1,1]
+                name: "STAGE 1: CLINIC ESCAPE",
+                objective: "Avoid the IV stands 💉 & reach Exit 🚪!",
+                bg: "#1a0814",
+                exit: { x: 270, y: 260, w: 32, h: 32 },
+                walls: [
+                    { x: 80, y: 0, w: 20, h: 200 },
+                    { x: 180, y: 100, w: 20, h: 220 }
                 ],
-                patrols: [
-                    { x: 1, y: 1, dx: 1, dy: 0, icon: '💉' },
-                    { x: 6, y: 3, dx: -1, dy: 0, icon: '💉' },
-                    { x: 1, y: 5, dx: 1, dy: 0, icon: '💉' }
-                ]
+                hazards: [
+                    { x: 120, y: 60, icon: '💉' },
+                    { x: 120, y: 140, icon: '💉' },
+                    { x: 220, y: 180, icon: '🏥' }
+                ],
+                interacts: []
             },
             2: {
-                name: "LVL 2: ICE HALLWAY",
-                objective: "Slippery floor! Avoid cold drafts ❄️!",
-                map: [
-                    [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,1,0,0,1],
-                    [1,0,1,0,1,1,0,1],
-                    [1,0,1,0,0,0,0,1],
-                    [1,0,1,1,1,0,1,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,1,1,0,1,1,2,1],
-                    [1,1,1,1,1,1,1,1]
+                name: "STAGE 2: COLD CORRIDOR",
+                objective: "Slippery Hallway! Watch out for draft ❄️!",
+                bg: "#081521",
+                exit: { x: 270, y: 40, w: 32, h: 32 },
+                walls: [
+                    { x: 0, y: 100, w: 220, h: 20 },
+                    { x: 100, y: 200, w: 220, h: 20 }
                 ],
-                patrols: [
-                    { x: 3, y: 1, dx: 0, dy: 1, icon: '❄️' },
-                    { x: 5, y: 5, dx: -1, dy: 0, icon: '❄️' }
-                ]
+                hazards: [
+                    { x: 50, y: 150, icon: '❄️' },
+                    { x: 180, y: 250, icon: '❄️' }
+                ],
+                interacts: []
             },
             3: {
-                name: "LVL 3: WORK STACK",
-                objective: "Dodge heavy work paper stacks 📚!",
-                map: [
-                    [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,0,1,0,0,1],
-                    [1,0,0,0,1,1,0,1],
-                    [1,1,1,0,0,0,0,1],
-                    [1,0,0,0,1,0,0,1],
-                    [1,0,1,0,1,0,2,1],
-                    [1,1,1,1,1,1,1,1]
+                name: "STAGE 3: WORK MOUNTAIN",
+                objective: "Navigate past heavy office stacks 📚!",
+                bg: "#1c1208",
+                exit: { x: 270, y: 270, w: 32, h: 32 },
+                walls: [
+                    { x: 60, y: 60, w: 200, h: 20 },
+                    { x: 60, y: 160, w: 200, h: 20 }
                 ],
-                patrols: [
-                    { x: 1, y: 3, dx: 1, dy: 0, icon: '📚' },
-                    { x: 5, y: 1, dx: 0, dy: 1, icon: '📚' }
-                ]
+                hazards: [
+                    { x: 100, y: 110, icon: '📚' },
+                    { x: 200, y: 210, icon: '💼' }
+                ],
+                interacts: []
             },
             4: {
-                name: "LVL 4: TRAFFIC DRIVE",
-                objective: "Frogger style: Dodge busy cars 🚗!",
-                map: [
-                    [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,1,1,1,0,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,1,1,1,0,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,1,1,0,0,0,2,1],
-                    [1,1,1,1,1,1,1,1]
+                name: "STAGE 4: MERCED COMMUTE",
+                objective: "Cross the street past traffic 🚗!",
+                bg: "#0d180f",
+                exit: { x: 270, y: 30, w: 32, h: 32 },
+                walls: [
+                    { x: 0, y: 80, w: 140, h: 20 },
+                    { x: 180, y: 180, w: 140, h: 20 }
                 ],
-                patrols: [
-                    { x: 1, y: 1, dx: 1, dy: 0, icon: '🚗' },
-                    { x: 6, y: 3, dx: -1, dy: 0, icon: '🏎️' },
-                    { x: 1, y: 5, dx: 1, dy: 0, icon: '🚗' }
-                ]
+                hazards: [
+                    { x: 150, y: 40, icon: '🚗' },
+                    { x: 80, y: 220, icon: '🏎️' }
+                ],
+                interacts: []
             },
             5: {
-                name: "LVL 5: KITCHEN CHOICE",
-                objective: "Choose: Eat Out 🍕 OR Marilyn's Cooking 🥣!",
-                map: [
-                    [1,1,1,1,1,1,1,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,0,1,1,1,1,0,1],
-                    [1,0,5,0,0,6,0,1], // 5: Eat Out 🍕, 6: Marilyn's Cooking 🥣
-                    [1,0,1,0,0,1,0,1],
-                    [1,0,0,0,0,0,0,1],
-                    [1,1,1,0,0,1,1,1],
-                    [1,1,1,1,1,1,1,1]
+                name: "STAGE 5: MARILYN'S PLACE",
+                objective: "Walk to Eat Out 🍕 OR Marilyn's Cooking 🥣!",
+                bg: "#2b0a1a",
+                exit: null,
+                walls: [
+                    { x: 150, y: 0, w: 20, h: 180 }
                 ],
-                patrols: []
+                hazards: [],
+                interacts: [
+                    { id: 'eatout', x: 50, y: 220, w: 50, h: 50, icon: '🍕', label: 'EAT OUT 🍕' },
+                    { id: 'marilyn', x: 220, y: 220, w: 50, h: 50, icon: '👩🏽‍🦱🥣', label: 'MARILYN 🥣' }
+                ]
             }
         };
 
-        // PATROL TICK FOR MOVING OBSTACLES
-        setInterval(() => {
-            const currentPatrols = levels[level].patrols;
-            const currentMap = levels[level].map;
-            if (!currentPatrols) return;
-
-            currentPatrols.forEach(p => {
-                let nextX = p.x + p.dx;
-                let nextY = p.y + p.dy;
-
-                if (currentMap[nextY] && currentMap[nextY][nextX] === 1) {
-                    p.dx *= -1;
-                    p.dy *= -1;
-                    nextX = p.x + p.dx;
-                    nextY = p.y + p.dy;
-                }
-
-                if (currentMap[nextY] && currentMap[nextY][nextX] !== 1) {
-                    p.x = nextX;
-                    p.y = nextY;
-                }
-
-                if (p.x === player.x && p.y === player.y) {
-                    hp--;
-                    playSfx(100, 'sawtooth', 0.2);
-                    updateHearts();
-                    showDialog("Ouch! You bumped an obstacle! Fall back!");
-                    player.x = 1;
-                    player.y = 1;
-                    if (hp <= 0) {
-                        showDialog("You got tired! Marilyn gives you a hug to heal you back up ❤️");
-                        hp = 3;
-                        updateHearts();
-                    }
-                }
-            });
-            drawGame();
-        }, 380);
-
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const currentMap = levels[level].map;
+            const lvl = levels[level];
 
-            for (let r = 0; r < GRID_SIZE; r++) {
-                for (let c = 0; c < GRID_SIZE; c++) {
-                    const tile = currentMap[r][c];
-                    const x = c * TILE_SIZE;
-                    const y = r * TILE_SIZE;
+            // Background
+            ctx.fillStyle = lvl.bg;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                    // Grid floor
-                    ctx.fillStyle = (r + c) % 2 === 0 ? '#260d1d' : '#1d0916';
-                    ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-
-                    // Walls
-                    if (tile === 1) {
-                        ctx.fillStyle = '#581c2f';
-                        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-                        ctx.strokeStyle = '#881337';
-                        ctx.strokeRect(x+2, y+2, TILE_SIZE-4, TILE_SIZE-4);
-                    } 
-                    // Exit Door
-                    else if (tile === 2) {
-                        ctx.fillStyle = '#ca8a04';
-                        ctx.fillRect(x+6, y+4, TILE_SIZE-12, TILE_SIZE-4);
-                        ctx.font = '18px sans-serif';
-                        ctx.fillText('🚪', x+8, y+26);
-                    }
-                    // Level 5 Choices
-                    else if (tile === 5) { // Eat Out
-                        ctx.font = '22px sans-serif';
-                        ctx.shadowColor = '#f97316';
-                        ctx.shadowBlur = 10;
-                        ctx.fillText('🍕', x+8, y+28);
-                        ctx.shadowBlur = 0;
-                    } else if (tile === 6) { // Marilyn's Cooking
-                        ctx.font = '22px sans-serif';
-                        ctx.shadowColor = '#facc15';
-                        ctx.shadowBlur = 10;
-                        ctx.fillText('👩🏽‍🦱🥣', x, y+28);
-                        ctx.shadowBlur = 0;
-                    }
-                }
+            // Draw Exit Door
+            if (lvl.exit) {
+                ctx.fillStyle = '#facc15';
+                ctx.fillRect(lvl.exit.x, lvl.exit.y, lvl.exit.w, lvl.exit.h);
+                ctx.font = '20px sans-serif';
+                ctx.fillText('🚪', lvl.exit.x + 4, lvl.exit.y + 24);
             }
 
-            // Draw Patrol Obstacles
-            if (levels[level].patrols) {
-                levels[level].patrols.forEach(p => {
-                    const px = p.x * TILE_SIZE;
-                    const py = p.y * TILE_SIZE;
+            // Draw Solid Obstacle Walls
+            lvl.walls.forEach(w => {
+                ctx.fillStyle = '#4c1d24';
+                ctx.fillRect(w.x, w.y, w.w, w.h);
+                ctx.strokeStyle = '#9f1239';
+                ctx.strokeRect(w.x+2, w.y+2, w.w-4, w.h-4);
+            });
+
+            // Draw Hazards
+            lvl.hazards.forEach(h => {
+                ctx.font = '22px sans-serif';
+                ctx.fillText(h.icon, h.x, h.y);
+            });
+
+            // Draw Level 5 Interactive Choices
+            if (lvl.interacts) {
+                lvl.interacts.forEach(i => {
+                    ctx.fillStyle = i.id === 'marilyn' ? '#be185d' : '#c2410c';
+                    ctx.fillRect(i.x, i.y, i.w, i.h);
+                    ctx.strokeStyle = '#facc15';
+                    ctx.strokeRect(i.x, i.y, i.w, i.h);
                     ctx.font = '22px sans-serif';
-                    ctx.shadowColor = '#f43f5e';
-                    ctx.shadowBlur = 10;
-                    ctx.fillText(p.icon, px+8, py+28);
-                    ctx.shadowBlur = 0;
+                    ctx.fillText(i.icon, i.x + 8, i.y + 34);
                 });
             }
 
-            // Draw King Robert Player (Crown)
-            const rx = player.x * TILE_SIZE;
-            const ry = player.y * TILE_SIZE;
-            ctx.font = '24px sans-serif';
+            // Draw Player King Crown
+            ctx.font = '26px sans-serif';
             ctx.shadowColor = '#facc15';
             ctx.shadowBlur = 12;
-            ctx.fillText('👑', rx+6, ry+29);
+            ctx.fillText('👑', player.x, player.y + 20);
             ctx.shadowBlur = 0;
 
             updateActionButton();
@@ -367,30 +295,57 @@
 
         function movePlayer(dir) {
             let dx = 0, dy = 0;
-            if (dir === 'up') dy = -1;
-            if (dir === 'down') dy = 1;
-            if (dir === 'left') dx = -1;
-            if (dir === 'right') dx = 1;
+            if (dir === 'up') dy = -player.speed;
+            if (dir === 'down') dy = player.speed;
+            if (dir === 'left') dx = -player.speed;
+            if (dir === 'right') dx = player.speed;
 
-            const newX = player.x + dx;
-            const newY = player.y + dy;
-            const currentMap = levels[level].map;
+            let nextX = Math.max(10, Math.min(280, player.x + dx));
+            let nextY = Math.max(10, Math.min(280, player.y + dy));
 
-            if (currentMap[newY][newX] === 1) {
-                playSfx(150, 'square', 0.08);
+            // Collision with Walls
+            const lvl = levels[level];
+            let hitWall = false;
+            lvl.walls.forEach(w => {
+                if (nextX + 10 > w.x && nextX < w.x + w.w && nextY + 10 > w.y && nextY < w.y + w.h) {
+                    hitWall = true;
+                }
+            });
+
+            if (hitWall) {
+                playSfx(140, 'square', 0.08);
                 return;
             }
 
-            player.x = newX;
-            player.y = newY;
-            playSfx(300, 'sine', 0.05);
+            player.x = nextX;
+            player.y = nextY;
+            playSfx(280, 'sine', 0.04);
 
-            if (currentMap[newY][newX] === 2) {
+            // Check Hazard Collisions
+            lvl.hazards.forEach(h => {
+                if (Math.abs(player.x - h.x) < 22 && Math.abs(player.y - h.y) < 22) {
+                    hp--;
+                    playSfx(100, 'sawtooth', 0.2);
+                    updateHearts();
+                    showDialog("Ouch! You bumped an obstacle! Fall back!");
+                    player.x = 20;
+                    player.y = 20;
+                    if (hp <= 0) {
+                        showDialog("You got tired! Marilyn gives you a hug to heal you back up ❤️");
+                        hp = 3;
+                        updateHearts();
+                    }
+                }
+            });
+
+            // Check Exit Door Collision
+            if (lvl.exit && player.x + 10 > lvl.exit.x && player.x < lvl.exit.x + lvl.exit.w && player.y + 10 > lvl.exit.y && player.y < lvl.exit.y + lvl.exit.h) {
                 level++;
-                player = {x:1, y:1};
+                player.x = 20;
+                player.y = 20;
                 document.getElementById('levelName').innerText = levels[level].name;
                 document.getElementById('objectiveText').innerText = levels[level].objective;
-                document.getElementById('stageProgress').innerText = level + " / 5";
+                document.getElementById('stageProgress').innerText = level + "/5";
                 showDialog(`Stage Cleared! Welcome to ${levels[level].name}! ✨`);
             }
 
@@ -398,34 +353,28 @@
         }
 
         function updateActionButton() {
-            const currentMap = levels[level].map;
             const label = document.getElementById('actionBtnLabel');
-
-            if (level === 5 && currentMap[player.y][player.x] === 5) {
-                label.innerText = "EAT OUT 🍕";
-            } else if (level === 5 && currentMap[player.y][player.x] === 6) {
-                label.innerText = "MARILYN 🥣";
+            if (level === 5) {
+                if (player.x < 120) label.innerText = "EAT OUT 🍕";
+                else if (player.x > 180) label.innerText = "MARILYN 🥣";
+                else label.innerText = "INTERACT";
             } else {
                 label.innerText = "INTERACT";
             }
         }
 
         function interactAction() {
-            const currentMap = levels[level].map;
-            
             if (level === 5) {
-                if (currentMap[player.y][player.x] === 5) { // Eat Out
+                if (player.x < 140) {
                     selectedOutcome = "Eat Out 🍕";
                     finishGame("🍕 Pizza & Takeout Date!", "King Robert chose to Eat Out! A delicious treat date locked in!");
-                    return;
-                } else if (currentMap[player.y][player.x] === 6) { // Marilyn's Cooking
+                } else {
                     selectedOutcome = "Marilyn's Cooking 🥣";
-                    finishGame("🥣 Marilyn's Homemade Healing Soup!", "King Robert chose Marilyn's Cooking! Homemade soup & massages coming right up!");
-                    return;
+                    finishGame("🥣 Marilyn's Homemade Cooking!", "King Robert chose Marilyn's Cooking! Homemade soup & pampering coming right up!");
                 }
+                return;
             }
-
-            showDialog("King Robert is looking around... Keep moving toward the objective!");
+            showDialog("King Robert is exploring... Move toward the exit 🚪!");
         }
 
         function finishGame(title, desc) {
@@ -483,10 +432,10 @@
         function restartGame() {
             level = 1;
             hp = 3;
-            player = {x:1, y:1};
+            player = { x: 30, y: 30, speed: 10, size: 24 };
             document.getElementById('levelName').innerText = levels[1].name;
             document.getElementById('objectiveText').innerText = levels[1].objective;
-            document.getElementById('stageProgress').innerText = "1 / 5";
+            document.getElementById('stageProgress').innerText = "1/5";
             document.getElementById('victoryOverlay').classList.add('hidden');
             document.getElementById('surveyButtons').classList.remove('hidden');
             document.getElementById('surveyThanks').classList.add('hidden');
@@ -496,7 +445,7 @@
 
         function handleTouchStart(dir) {
             movePlayer(dir);
-            touchInterval = setInterval(() => movePlayer(dir), 200);
+            touchInterval = setInterval(() => movePlayer(dir), 120);
         }
         function handleTouchEnd() {
             if (touchInterval) clearInterval(touchInterval);
