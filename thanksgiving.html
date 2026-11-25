@@ -65,6 +65,41 @@
       100% { transform: translateY(110vh) rotate(360deg); }
     }
 
+    /* Floating Kiss Photo Pop-up */
+    .floating-kiss-photo {
+      position: fixed;
+      bottom: 130px;
+      left: 50%;
+      width: 145px;
+      height: 145px;
+      object-fit: cover;
+      border-radius: 22px;
+      border: 3px solid var(--cream);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.65), 0 0 22px rgba(251, 113, 133, 0.45);
+      pointer-events: none;
+      z-index: 200;
+      animation: floatAndFade 3.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes floatAndFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 30px) scale(0.75) rotate(-4deg);
+      }
+      18% {
+        opacity: 1;
+        transform: translate(-50%, 0px) scale(1) rotate(2deg);
+      }
+      70% {
+        opacity: 0.95;
+        transform: translate(-50%, -65px) scale(1.02) rotate(-1deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -125px) scale(0.95) rotate(2deg);
+      }
+    }
+
     .container {
       position: relative;
       z-index: 1;
@@ -429,9 +464,9 @@
       <div class="status-badge">🍂 Thanksgiving Build v2026.11</div>
     </div>
 
-    <!-- Main Letter Card -->
+   <!-- Main Letter Card -->
     <div class="card">
-      <h1>Happy Thanksgiving, Robert 🥧</h1>
+      <h1>Happy Thanksgiving Babe 🥧</h1>
       <div class="letter-text">
         <p>
           Even though we can’t spend Thanksgiving together this year, I wanted to deploy a little piece of my heart straight to your phone.
@@ -440,13 +475,13 @@
           Today I’m compiling a list of everything I’m grateful for, and you are right at the top:
         </p>
         <ul class="gratitude-list">
-          <li><span>[01]</span> <strong class="highlight">You:</strong> Just being who you are every single day.</li>
-          <li><span>[02]</span> <strong class="highlight">Your generosity:</strong> How big your heart is and how much you care.</li>
-          <li><span>[03]</span> <strong class="highlight">Your time:</strong> Every moment and call you share with me.</li>
-          <li><span>[04]</span> <strong class="highlight">Your sweetness:</strong> Being there for me and cheering me up when I was feeling down the other day.</li>
+          <li><span>[01]</span> <strong class="highlight">You:</strong> Simply having you in my life and getting to know you.</li>
+          <li><span>[02]</span> <strong class="highlight">Your generosity:</strong> Everything you've shared with me and the ways you've looked out for me. </li>
+          <li><span>[03]</span> <strong class="highlight">Your time:</strong> Every moment, message, and call you share with me even with your busy schedule.</li>
+          <li><span>[04]</span> <strong class="highlight">Your sweetness:</strong> Being there for me and cheering me up when I was feeling down the other day. That meant so much to me.  </li>
         </ul>
         <p>
-          I love you so much, and I’m counting down the days until I get to see you again. ❤️
+          I wish I could’ve hugged you for Thanksgiving. I love you so much amor, and I hope I get to see you soon. ❤️
         </p>
       </div>
     </div>
@@ -528,7 +563,6 @@
       document.getElementById("connection-status").style.color = "#ef4444";
     }
 
-    // Check if already unlocked in this browser session
     if (sessionStorage.getItem("robert_unlocked") === "true") {
       unlockPage(false);
     }
@@ -544,7 +578,7 @@
       } else {
         errorMsg.textContent = "> ACCESS DENIED: Invalid code.";
         lockCard.classList.remove("shake");
-        void lockCard.offsetWidth; // trigger reflow to restart animation
+        void lockCard.offsetWidth;
         lockCard.classList.add("shake");
       }
     };
@@ -580,6 +614,21 @@
       }
     }
 
+    function spawnFloatingKissPhoto() {
+      const img = document.createElement("img");
+      img.src = "IMG_20260807_181308.jpg";
+      img.alt = "Kiss";
+      img.className = "floating-kiss-photo";
+      // Slight horizontal randomness so rapid taps look playful
+      const randomOffset = Math.floor(Math.random() * 60) - 30;
+      img.style.left = `calc(50% + ${randomOffset}px)`;
+      document.body.appendChild(img);
+
+      setTimeout(() => {
+        img.remove();
+      }, 3400);
+    }
+
     window.sendAffection = async function(type) {
       if (type === 'hug') {
         localHugs++;
@@ -589,6 +638,7 @@
         localKisses++;
         document.getElementById("kiss-count").textContent = `Sent: ${localKisses}`;
         showToast("😘 Kisses transmitted to Marilyn!");
+        spawnFloatingKissPhoto();
       }
 
       if (docRef) {
